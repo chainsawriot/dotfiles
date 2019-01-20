@@ -1,9 +1,9 @@
 alias emacs='emacs -nw'
-alias ls='ls -G'
+alias ls='ls -G -l --block-size=M'
 alias c='clear'
 alias l='ls -lart'
-alias gitpom='git push origin master'
-alias gitca='git commit -am'
+alias gpom='git push origin master'
+alias gca='git commit -am'
 alias rr='Rscript -e'
 alias rdoc='rr "devtools::document()"'
 alias rcheck='rr "devtools::check()"'
@@ -12,6 +12,9 @@ alias pweb='python -m SimpleHTTPServer 8000'
 alias refresh='source ~/.zshrc'
 alias editalias='emacs ~/.myaliases.sh'
 alias rbuild='rr "devtools::build()"'
+alias rin='rr "devtools::install()"'
+alias tma='tmux attach -t '
+alias tmn='tmux new -s '
 
 function rmd() {
     rr "rmarkdown::render('$1')"

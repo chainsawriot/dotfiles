@@ -85,11 +85,11 @@ fi
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 source ~/.myaliases.sh
-source ~/.localrc
-eval "$(rbenv init -)"
+[ -f ~/.localrc ] && source ~/.localrc
+test -e "~/.rbenv" && eval "$(rbenv init -)"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-source ~/tools/z/z.sh
+[ -f ~/tools/z/z.sh ] && source ~/tools/z/z.sh

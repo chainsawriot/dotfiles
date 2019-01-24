@@ -1,5 +1,5 @@
 alias emacs='emacs -nw'
-alias ls='ls -G -l --block-size=M'
+alias ls='ls --color=auto -l --block-size=M'
 alias c='clear'
 alias l='ls -lart'
 alias gpom='git push origin master'

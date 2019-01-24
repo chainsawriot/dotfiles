@@ -83,3 +83,5 @@
 (add-to-list 'auto-mode-alist '("\\.rmd" . rmd-mode))
 (require 'rg)
 (rg-enable-default-bindings)
+
+(load-theme 'tango-dark)

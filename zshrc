@@ -51,7 +51,7 @@ ZSH_THEME="fishy"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+# plugins=(git)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -86,7 +86,7 @@ fi
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 source ~/.myaliases.sh
 [ -f ~/.localrc ] && source ~/.localrc
-test -e "~/.rbenv" && eval "$(rbenv init -)"
+[ -d ~/.rbenv ] && eval "$(rbenv init -)"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 

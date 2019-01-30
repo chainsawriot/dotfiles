@@ -86,7 +86,10 @@ fi
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 source ~/.myaliases.sh
 [ -f ~/.localrc ] && source ~/.localrc
-[ -d ~/.rbenv ] && eval "$(rbenv init -)"
+if [ -d ~/.rbenv ]; then
+   export PATH="$HOME/.rbenv/bin:$PATH"
+   eval "$(rbenv init -)"
+fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 

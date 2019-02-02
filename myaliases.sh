@@ -1,7 +1,10 @@
 alias emacs='emacs -nw'
-alias ls='ls --color=auto -l --block-size=M'
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    alias ls='ls --color=auto -l --block-size=M'
+else
+    alias ls='ls -lartG'
+fi
 alias c='clear'
-alias l='ls -lart'
 alias gpom='git push origin master'
 alias gca='git commit -am'
 alias rr='Rscript -e'
@@ -31,3 +34,4 @@ function cran() {
 function rh() {
     rr "?$1"
 }
+

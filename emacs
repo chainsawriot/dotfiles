@@ -85,3 +85,14 @@
 (rg-enable-default-bindings)
 
 (load-theme 'tango-dark)
+
+(when (boundp 'global-prettify-symbols-mode)
+  (add-hook 'ess-mode-hook
+            (lambda ()
+              (push '("%>%" . ?⋙) prettify-symbols-alist)
+              ))
+  (add-hook 'inferior-ess-mode-hook
+            (lambda ()
+              (push '("%>%" . ?⋙) prettify-symbols-alist)
+              ))
+  (global-prettify-symbols-mode +1))

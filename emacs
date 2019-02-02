@@ -67,7 +67,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (rg polymode paredit markdown-mode magit inf-ruby flymake-ruby cider))))
+    (dockerfile-mode docker rg polymode paredit markdown-mode magit inf-ruby flymake-ruby cider))))
 
 (require 'poly-R)
 (require 'poly-markdown)

@@ -10,6 +10,7 @@ alias gca='git commit -am'
 alias rr='Rscript -e'
 alias rdoc='rr "devtools::document()"'
 alias rcheck='rr "devtools::check()"'
+alias rmegacheck='rr "devtools::check(manual = TRUE, remote = TRUE)"'
 alias rtest='rr "devtools::test()"'
 alias pweb='python -m SimpleHTTPServer 8000'
 alias refresh='source ~/.zshrc'
@@ -18,6 +19,7 @@ alias rbuild='rr "devtools::build()"'
 alias rin='rr "devtools::install()"'
 alias tma='tmux attach -t '
 alias tmn='tmux new -s '
+alias g++-6='g++'
 
 function rmd() {
     rr "rmarkdown::render('$1')"

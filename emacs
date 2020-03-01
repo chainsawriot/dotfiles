@@ -67,24 +67,34 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (dockerfile-mode docker rg polymode paredit markdown-mode magit inf-ruby flymake-ruby cider))))
+    (poly-R stan-mode dockerfile-mode docker rg polymode paredit markdown-mode magit inf-ruby flymake-ruby cider))))
 
-(require 'poly-R)
+
+;; Clone them into tools
+
+(add-to-list 'load-path "/Users/chainsaw/tools/polymode")
+(add-to-list 'load-path "/Users/chainsaw/tools/poly-markdown")
+
+;; (require 'poly-R)
 (require 'poly-markdown)
 ;; 
 
-(defun rmd-mode ()
-  "ESS Markdown mode for rmd files"
-  (interactive)
-  (require 'poly-R)
-  (require 'poly-markdown)     
-  (poly-markdown+r-mode))
+;; (defun rmd-mode ()
+;;   "ESS Markdown mode for rmd files"
+;;   (interactive)
+;;   (require 'poly-R)
+;;   (require 'poly-markdown)     
+;;   (poly-markdown+r-mode))
 
-(add-to-list 'auto-mode-alist '("\\.rmd" . rmd-mode))
+(add-to-list 'auto-mode-alist '("\\.rmd" . poly-markdown-mode))
 (require 'rg)
 (rg-enable-default-bindings)
 
 (load-theme 'tango-dark)
+
+(global-set-key (kbd "C-c m") 'recompile)
+(global-set-key (kbd "C-x g") 'magit-status)
+
 
 ;; (when (boundp 'global-prettify-symbols-mode)
 ;;   (add-hook 'ess-mode-hook
@@ -96,3 +106,4 @@
 ;;               (push '("%>%" . ?⋙) prettify-symbols-alist)
 ;;               ))
 ;;   (global-prettify-symbols-mode +1))
+

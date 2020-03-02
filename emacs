@@ -45,6 +45,9 @@
 
 (global-set-key (kbd "C-c g") 'magit-status)
 (global-set-key (kbd "C-c r") 'inf-ruby)
+(global-set-key (kbd "C-c e") 'recompile)
+(global-set-key (kbd "C-c d") 'ess-r-devtools-load-package)
+
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -96,3 +99,8 @@
 ;;               (push '("%>%" . ?⋙) prettify-symbols-alist)
 ;;               ))
 ;;   (global-prettify-symbols-mode +1))
+
+(setq org-log-done 'time)
+
+(defalias 'lp 'ess-r-devtools-load-package)
+

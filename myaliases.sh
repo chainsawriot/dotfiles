@@ -21,7 +21,6 @@ alias tma='tmux attach -t '
 alias tmn='tmux new -s '
 alias gephi='~/tools/gephi-0.9.2/bin/gephi'
 alias zotero='~/tools/Zotero_linux-x86_64/zotero'
-alias resteco='ssh chainsawriot@resteco.mzes.uni-mannheim.de'
 alias makepkg='rr "usethis::create_package(\"`pwd`\")"'
 alias g++-6='g++'
 

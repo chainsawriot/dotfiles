@@ -16,9 +16,12 @@ alias pweb='python -m SimpleHTTPServer 8000'
 alias refresh='source ~/.zshrc'
 alias editalias='emacs ~/.myaliases.sh'
 alias rbuild='rr "devtools::build()"'
-alias rin='rr "devtools::install()"'
+alias rin='rr "devtools::document(); devtools::install(quick = TRUE)"'
 alias tma='tmux attach -t '
 alias tmn='tmux new -s '
+alias gephi='~/tools/gephi-0.9.2/bin/gephi'
+alias zotero='~/tools/Zotero_linux-x86_64/zotero'
+alias makepkg='rr "usethis::create_package(\"`pwd`\")"'
 alias g++-6='g++'
 
 function rmd() {
@@ -36,4 +39,3 @@ function cran() {
 function rh() {
     rr "?$1"
 }
-

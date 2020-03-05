@@ -91,6 +91,8 @@ if [ -d ~/.rbenv ]; then
    eval "$(rbenv init -)"
 fi
 
+PATH=$HOME/.local/bin:$PATH
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"

@@ -37,6 +37,9 @@
 
 (global-set-key (kbd "C-c g") 'magit-status)
 (global-set-key (kbd "C-c r") 'inf-ruby)
+(global-set-key (kbd "C-c e") 'recompile)
+(global-set-key (kbd "C-c d") 'ess-r-devtools-load-package)
+
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -111,3 +114,7 @@
   (just-one-space 1))
 (define-key ess-mode-map (kbd "M-`") 'then_R_operator)
 (define-key inferior-ess-mode-map (kbd "M-`") 'then_R_operator)
+
+(setq org-log-done 'time)
+
+(defalias 'lp 'ess-r-devtools-load-package)

@@ -5,8 +5,8 @@
   ;; For important compatibility libraries like cl-lib
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 (package-initialize) ;; You might already have this line
-(add-to-list 'load-path "/Users/chainsaw/tools/ess/lisp")
-(load "ess-site")
+;;(add-to-list 'load-path "/Users/chainsaw/tools/ess/lisp")
+;;(load "ess-site")
 (setq inhibit-startup-message t)
 (show-paren-mode 1)
 (setq ess-ask-for-ess-directory nil)
@@ -33,14 +33,6 @@
 ;(require 'flymake-ruby)
 ;(add-hook 'ruby-mode-hook 'flymake-ruby-load)
 
-(defun then_R_operator ()
-  "R - %>% operator or 'then' pipe operator"
-  (interactive)
-  (just-one-space 1)
-  (insert "%>%")
-  (just-one-space 1))
-(define-key ess-mode-map (kbd "M-`") 'then_R_operator)
-(define-key inferior-ess-mode-map (kbd "M-`") 'then_R_operator)
 
 
 (global-set-key (kbd "C-c g") 'magit-status)
@@ -107,3 +99,15 @@
 ;;               ))
 ;;   (global-prettify-symbols-mode +1))
 
+(require 'ess-r-mode)
+(define-key ess-r-mode-map "_" 'ess-insert-assign)
+(define-key inferior-ess-r-mode-map "_" 'ess-insert-assign)
+
+(defun then_R_operator ()
+  "R - %>% operator or 'then' pipe operator"
+  (interactive)
+  (just-one-space 1)
+  (insert "%>%")
+  (just-one-space 1))
+(define-key ess-mode-map (kbd "M-`") 'then_R_operator)
+(define-key inferior-ess-mode-map (kbd "M-`") 'then_R_operator)

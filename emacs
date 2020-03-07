@@ -35,12 +35,6 @@
 
 
 
-(global-set-key (kbd "C-c g") 'magit-status)
-(global-set-key (kbd "C-c r") 'inf-ruby)
-(global-set-key (kbd "C-c e") 'recompile)
-(global-set-key (kbd "C-c d") 'ess-r-devtools-load-package)
-
-
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -65,21 +59,14 @@
     (poly-R stan-mode dockerfile-mode docker rg polymode paredit markdown-mode magit inf-ruby flymake-ruby cider))))
 
 
+;; Poly Mode
 ;; Clone them into tools
 
 (add-to-list 'load-path "/Users/chainsaw/tools/polymode")
 (add-to-list 'load-path "/Users/chainsaw/tools/poly-markdown")
 
-;; (require 'poly-R)
 (require 'poly-markdown)
-;; 
 
-;; (defun rmd-mode ()
-;;   "ESS Markdown mode for rmd files"
-;;   (interactive)
-;;   (require 'poly-R)
-;;   (require 'poly-markdown)     
-;;   (poly-markdown+r-mode))
 
 (add-to-list 'auto-mode-alist '("\\.rmd" . poly-markdown-mode))
 (require 'rg)
@@ -87,20 +74,15 @@
 
 (load-theme 'tango-dark)
 
+;; keys
+
 (global-set-key (kbd "C-c m") 'recompile)
-(global-set-key (kbd "C-x g") 'magit-status)
+(global-set-key (kbd "C-c g") 'magit-status)
+(global-set-key (kbd "C-c r") 'inf-ruby)
+(global-set-key (kbd "C-c e") 'recompile)
+(global-set-key (kbd "C-c d") 'ess-r-devtools-load-package)
 
-
-;; (when (boundp 'global-prettify-symbols-mode)
-;;   (add-hook 'ess-mode-hook
-;;             (lambda ()
-;;               (push '("%>%" . ?⋙) prettify-symbols-alist)
-;;               ))
-;;   (add-hook 'inferior-ess-mode-hook
-;;             (lambda ()
-;;               (push '("%>%" . ?⋙) prettify-symbols-alist)
-;;               ))
-;;   (global-prettify-symbols-mode +1))
+;; ESS Related stuff
 
 (require 'ess-r-mode)
 (define-key ess-r-mode-map "_" 'ess-insert-assign)

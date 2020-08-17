@@ -1,3 +1,17 @@
+#+TITLE: Emacs Configuration
+#+PROPERTY: header-args :tangle emacs
+
+Tangle this into emacs config by M-x org-babel-tangle
+
+C-c C-v t
+
+s-TAB to toggle display level.
+
+* Package
+
+Initialize package mode
+
+#+BEGIN_SRC emacs-lisp
 (require 'package) ;; You might already have this line
 (add-to-list 'package-archives
 	     '("melpa" . "https://melpa.org/packages/"))
@@ -5,11 +19,21 @@
   ;; For important compatibility libraries like cl-lib
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 (package-initialize) ;; You might already have this line
+#+END_SRC
 
+* General settings
+
+Paren display; visual line mode
+
+#+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-message t)
 (show-paren-mode 1)
 (global-visual-line-mode t)
+#+END_SRC
 
+* Paredit
+
+#+BEGIN_SRC emacs-lisp
 (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
 (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
 (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
@@ -25,9 +49,15 @@
  '(package-selected-packages
    (quote
     (eval-in-repl racket-mode ebib vterm poly-R stan-mode dockerfile-mode docker rg polymode paredit markdown-mode magit inf-ruby flymake-ruby cider))))
+#+END_SRC
 
+* Theme
+#+BEGIN_SRC emacs-lisp
 (load-theme 'tango-dark)
+#+END_SRC
 
+* Backup
+#+BEGIN_SRC emacs-lisp
 (setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
       backup-by-copying t    ; Don't delink hardlinks
       version-control t      ; Use version numbers on backups
@@ -35,14 +65,34 @@
       kept-new-versions 20   ; how many of the newest versions to keep
       kept-old-versions 5    ; and how many of the old
       )
+#+END_SRC
 
+* Ido mode
+
+BTW: C-j to confirm.
+
+#+BEGIN_SRC emacs-lisp
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
 (ido-mode 1)
+#+END_SRC
 
+* rg
+
+#+BEGIN_SRC emacs-lisp
 (require 'rg)
 (rg-enable-default-bindings)
+#+END_SRC
 
+* Emacs Speaks Statistics
+
+- M-` to insert pipe
+- C-q to eval-and-go (override the original C-q, but I don't use it anyway.)
+- "_" works in the old skool way.
+- M-x lp : a quicker way to devtools::load_all()
+- ess_rproj
+
+#+BEGIN_SRC emacs-lisp
 (require 'ess-r-mode)
 (define-key ess-r-mode-map "_" 'ess-insert-assign)
 (define-key inferior-ess-r-mode-map "_" 'ess-insert-assign)
@@ -65,15 +115,29 @@
 
 (load-file "~/dev/ess_rproj/ess_rproj.el")
 (add-hook 'ess-mode-hook #'ess_rproj)
+#+END_SRC
 
+* Poly Mode
+
+Clone them into ~/tools
+
+#+BEGIN_SRC emacs-lisp
 (add-to-list 'load-path "/Users/chainsaw/tools/polymode")
 (add-to-list 'load-path "/Users/chainsaw/tools/poly-markdown")
 (require 'poly-markdown)
 (add-to-list 'auto-mode-alist '("\\.rmd" . poly-markdown-mode))
+#+END_SRC
 
+* Set keys
+
+#+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-c m") 'recompile)
 (global-set-key (kbd "C-c g") 'magit-status)
 (global-set-key (kbd "C-c r") 'inf-ruby)
 ;; (global-set-key (kbd "C-c d") 'ess-r-devtools-load-package)
+#+END_SRC
 
+* org
+#+BEGIN_SRC emacs-lisp
 (setq org-log-done 'time)
+#+END_SRC

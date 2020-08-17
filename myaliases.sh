@@ -16,6 +16,8 @@ alias pweb='python -m SimpleHTTPServer 8000'
 alias refresh='source ~/.zshrc'
 alias editalias='emacs ~/.myaliases.sh'
 alias rbuild='rr "devtools::build()"'
+alias rspell='rr "devtools::spell_check()"'
+alias rrelease='rr "devtools::release()"'
 alias rin='rr "devtools::document(); devtools::install(quick = TRUE, upgrade = FALSE)"'
 alias tma='tmux attach -t '
 alias tmn='tmux new -s '
@@ -38,4 +40,8 @@ function cran() {
 
 function rh() {
     rr "?$1"
+}
+
+function make_mzes() {
+    rr "dir.create('$1') ; rmarkdown::draft('$1/index.rmd', template = 'mzesalike', package = 'mzesalike', edit = FALSE)"
 }

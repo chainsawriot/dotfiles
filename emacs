@@ -84,8 +84,6 @@
 (global-set-key (kbd "C-c r") 'inf-ruby)
 ;; (global-set-key (kbd "C-c d") 'ess-r-devtools-load-package)
 
-(setq org-log-done 'time)
-
 (require 'helm)
 (global-set-key (kbd "M-x") #'helm-M-x)
 (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
@@ -133,3 +131,6 @@ bibtex-autokey-titleword-case-convert 'upcase)
 (define-key lisp-interaction-mode-map (kbd "C-q") 'eir-eval-in-ielm)
 ;; for M-x info
 (define-key Info-mode-map (kbd "C-q") 'eir-eval-in-ielm)
+
+(setq org-log-done 'time)
+(require 'org-drill)

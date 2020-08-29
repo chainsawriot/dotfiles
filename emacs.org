@@ -9,6 +9,12 @@ s-TAB to toggle display level.
 
 Install these packages: rg, paredit, ess, polymode (from github at the moment), magit, helm, helm-bibtex, biblio
 
+The principles
+1. Use =C-k= for eval and go.
+2. Use =C-c C-r= for eval the selection.
+3. Use =C-x= or =C-c= plus a single character for frequently used commands. Put it in the LHS of the keyboard if possible. For example, helm-bibtex is =C-x x=.
+4. Don't care about speed of starting up. It should only be done once using emacs daemon and emacsclient. (Looking at the =myaliaes.sh=. It has been mapped to just a single =e=)
+
 * Theme
 #+BEGIN_SRC emacs-lisp
 (load-theme 'tango-dark)
@@ -151,10 +157,6 @@ Clone them into ~/tools
 ;; (global-set-key (kbd "C-c d") 'ess-r-devtools-load-package)
 #+END_SRC
 
-* org
-#+BEGIN_SRC emacs-lisp
-(setq org-log-done 'time)
-#+END_SRC
 * helm
 
 #+BEGIN_SRC emacs-lisp
@@ -220,4 +222,10 @@ bibtex-autokey-titleword-case-convert 'upcase)
 (define-key lisp-interaction-mode-map (kbd "C-q") 'eir-eval-in-ielm)
 ;; for M-x info
 (define-key Info-mode-map (kbd "C-q") 'eir-eval-in-ielm)
+#+END_SRC
+* org
+#+BEGIN_SRC emacs-lisp
+(setq org-log-done 'time)
+(require 'org-drill)
+
 #+END_SRC

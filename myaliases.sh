@@ -1,4 +1,4 @@
-alias e='emacs -nw'
+alias e='emacsclient --tty'
 alias dote='e ~/dev/dotfiles/emacs.org'
 ## alias emacs='emacs -nw'
 if [[ "$OSTYPE" == "linux-gnu" ]]; then

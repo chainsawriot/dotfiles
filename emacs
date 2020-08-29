@@ -1,3 +1,5 @@
+(load-theme 'tango-dark)
+
 (require 'package) ;; You might already have this line
 (add-to-list 'package-archives
 	     '("melpa" . "https://melpa.org/packages/"))
@@ -26,8 +28,6 @@
    (quote
     (eval-in-repl racket-mode ebib vterm poly-R stan-mode dockerfile-mode docker rg polymode paredit markdown-mode magit inf-ruby flymake-ruby cider))))
 
-(load-theme 'tango-dark)
-
 (setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
       backup-by-copying t    ; Don't delink hardlinks
       version-control t      ; Use version numbers on backups
@@ -36,9 +36,9 @@
       kept-old-versions 5    ; and how many of the old
       )
 
-(setq ido-enable-flex-matching t)
-(setq ido-everywhere t)
-(ido-mode 1)
+;; (setq ido-enable-flex-matching t)
+;; (setq ido-everywhere t)
+;; (ido-mode 1)
 
 (require 'rg)
 (rg-enable-default-bindings)
@@ -66,6 +66,14 @@
 (load-file "~/dev/ess_rproj/ess_rproj.el")
 (add-hook 'ess-mode-hook #'ess_rproj)
 
+(require 'rainbow-delimiters)
+(add-hook 'ess-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'ess-mode-hook 'hs-minor-mode)
+
+(require 'rainbow-mode)
+(dolist (hook '(ess-mode-hook inferior-ess-mode-hook))
+(add-hook hook 'rainbow-turn-on))
+
 (add-to-list 'load-path "/Users/chainsaw/tools/polymode")
 (add-to-list 'load-path "/Users/chainsaw/tools/poly-markdown")
 (require 'poly-markdown)
@@ -77,3 +85,51 @@
 ;; (global-set-key (kbd "C-c d") 'ess-r-devtools-load-package)
 
 (setq org-log-done 'time)
+
+(require 'helm)
+(global-set-key (kbd "M-x") #'helm-M-x)
+(global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
+(global-set-key (kbd "C-x C-f") #'helm-find-files)
+(global-set-key (kbd "M-y") #'helm-show-kill-ring)
+(global-set-key (kbd "C-x b") #'helm-mini)
+(helm-mode 1)
+
+(require 'helm-bibtex)
+(autoload 'helm-bibtex "helm-bibtex" "" t)
+(setq bibtex-completion-bibliography
+      '("~/dev/chcbibtex/bib.bib"))
+(setq bibtex-completion-notes-path "~/dev/chcbibtex/notes.org")
+(setq bibtex-completion-format-citation-functions
+  '((org-mode      . bibtex-completion-format-citation-org-link-to-PDF)
+    (latex-mode    . bibtex-completion-format-citation-cite)
+    (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
+    (default       . bibtex-completion-format-citation-pandoc-citeproc)))
+
+;; make bibtex-completion-insert-citation the default action
+
+(helm-delete-action-from-source "Insert citation" helm-source-bibtex)
+(helm-add-action-to-source "Insert citation" 'helm-bibtex-insert-citation helm-source-bibtex 0)
+
+(global-set-key (kbd "C-x x") 'helm-bibtex)
+
+(setq-default biblio-bibtex-use-autokey t)
+
+(setq-default
+bibtex-autokey-name-year-separator ":"
+bibtex-autokey-year-title-separator ":"
+bibtex-autokey-year-length 4
+bibtex-autokey-titlewords 3
+bibtex-autokey-titleword-length -1 ;; -1 means exactly one
+bibtex-autokey-titlewords-stretch 0
+bibtex-autokey-titleword-separator ""
+bibtex-autokey-titleword-case-convert 'upcase)
+
+(require 'eval-in-repl-ielm)
+;; Evaluate expression in the current buffer.
+(setq eir-ielm-eval-in-current-buffer t)
+;; for .el files
+(define-key emacs-lisp-mode-map (kbd "C-q") 'eir-eval-in-ielm)
+;; for *scratch*
+(define-key lisp-interaction-mode-map (kbd "C-q") 'eir-eval-in-ielm)
+;; for M-x info
+(define-key Info-mode-map (kbd "C-q") 'eir-eval-in-ielm)

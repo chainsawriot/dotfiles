@@ -1,4 +1,6 @@
-alias emacs='emacs -nw'
+alias e='emacs -nw'
+alias dote='e ~/dev/dotfiles/emacs.org'
+## alias emacs='emacs -nw'
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     alias ls='ls --color=auto -l --block-size=M'
 else
@@ -44,4 +46,20 @@ function rh() {
 
 function make_mzes() {
     rr "dir.create('$1') ; rmarkdown::draft('$1/index.rmd', template = 'mzesalike', package = 'mzesalike', edit = FALSE)"
+}
+
+function papaja() {
+    rr "rmarkdown::draft('$1', template = 'apa6', create_dir = FALSE, package = 'papaja', edit = FALSE)"
+}
+
+function tangle() {
+    emacs --batch -l org --eval "(org-babel-tangle-file \"$1\")"
+}
+
+function docx2md() {
+    pandoc -s $1 -t markdown --wrap=none -o $2
+}
+
+function mov2gif() {
+    ffmpeg -i $1 -vf scale=480:-1 -r 5 -f gif $2
 }

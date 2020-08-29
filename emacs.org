@@ -7,6 +7,13 @@ C-c C-v t
 
 s-TAB to toggle display level.
 
+Install these packages: rg, paredit, ess, polymode (from github at the moment), magit, helm, helm-bibtex, biblio
+
+* Theme
+#+BEGIN_SRC emacs-lisp
+(load-theme 'tango-dark)
+#+END_SRC
+
 * Package
 
 Initialize package mode
@@ -51,11 +58,6 @@ Paren display; visual line mode
     (eval-in-repl racket-mode ebib vterm poly-R stan-mode dockerfile-mode docker rg polymode paredit markdown-mode magit inf-ruby flymake-ruby cider))))
 #+END_SRC
 
-* Theme
-#+BEGIN_SRC emacs-lisp
-(load-theme 'tango-dark)
-#+END_SRC
-
 * Backup
 #+BEGIN_SRC emacs-lisp
 (setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
@@ -72,9 +74,9 @@ Paren display; visual line mode
 BTW: C-j to confirm.
 
 #+BEGIN_SRC emacs-lisp
-(setq ido-enable-flex-matching t)
-(setq ido-everywhere t)
-(ido-mode 1)
+;; (setq ido-enable-flex-matching t)
+;; (setq ido-everywhere t)
+;; (ido-mode 1)
 #+END_SRC
 
 * rg
@@ -117,6 +119,18 @@ BTW: C-j to confirm.
 (add-hook 'ess-mode-hook #'ess_rproj)
 #+END_SRC
 
+Coloring
+
+#+BEGIN_SRC emacs-lisp
+(require 'rainbow-delimiters)
+(add-hook 'ess-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'ess-mode-hook 'hs-minor-mode)
+
+(require 'rainbow-mode)
+(dolist (hook '(ess-mode-hook inferior-ess-mode-hook))
+(add-hook hook 'rainbow-turn-on))
+#+END_SRC
+
 * Poly Mode
 
 Clone them into ~/tools
@@ -140,4 +154,70 @@ Clone them into ~/tools
 * org
 #+BEGIN_SRC emacs-lisp
 (setq org-log-done 'time)
+#+END_SRC
+* helm
+
+#+BEGIN_SRC emacs-lisp
+(require 'helm)
+(global-set-key (kbd "M-x") #'helm-M-x)
+(global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
+(global-set-key (kbd "C-x C-f") #'helm-find-files)
+(global-set-key (kbd "M-y") #'helm-show-kill-ring)
+(global-set-key (kbd "C-x b") #'helm-mini)
+(helm-mode 1)
+#+END_SRC
+* BibTex related stuff
+
+C-x x to initialize helm-bibtex
+
+The default action is now citation (mostly in markdown mode).
+
+To cite multiple item, select each one with C-<SPC> and then press enter.
+
+#+BEGIN_SRC emacs-lisp
+(require 'helm-bibtex)
+(autoload 'helm-bibtex "helm-bibtex" "" t)
+(setq bibtex-completion-bibliography
+      '("~/dev/chcbibtex/bib.bib"))
+(setq bibtex-completion-notes-path "~/dev/chcbibtex/notes.org")
+(setq bibtex-completion-format-citation-functions
+  '((org-mode      . bibtex-completion-format-citation-org-link-to-PDF)
+    (latex-mode    . bibtex-completion-format-citation-cite)
+    (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
+    (default       . bibtex-completion-format-citation-pandoc-citeproc)))
+
+;; make bibtex-completion-insert-citation the default action
+
+(helm-delete-action-from-source "Insert citation" helm-source-bibtex)
+(helm-add-action-to-source "Insert citation" 'helm-bibtex-insert-citation helm-source-bibtex 0)
+
+(global-set-key (kbd "C-x x") 'helm-bibtex)
+
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(setq-default biblio-bibtex-use-autokey t)
+
+(setq-default
+bibtex-autokey-name-year-separator ":"
+bibtex-autokey-year-title-separator ":"
+bibtex-autokey-year-length 4
+bibtex-autokey-titlewords 3
+bibtex-autokey-titleword-length -1 ;; -1 means exactly one
+bibtex-autokey-titlewords-stretch 0
+bibtex-autokey-titleword-separator ""
+bibtex-autokey-titleword-case-convert 'upcase)
+#+END_SRC
+* ielm
+
+#+BEGIN_SRC emacs-lisp
+(require 'eval-in-repl-ielm)
+;; Evaluate expression in the current buffer.
+(setq eir-ielm-eval-in-current-buffer t)
+;; for .el files
+(define-key emacs-lisp-mode-map (kbd "C-q") 'eir-eval-in-ielm)
+;; for *scratch*
+(define-key lisp-interaction-mode-map (kbd "C-q") 'eir-eval-in-ielm)
+;; for M-x info
+(define-key Info-mode-map (kbd "C-q") 'eir-eval-in-ielm)
 #+END_SRC

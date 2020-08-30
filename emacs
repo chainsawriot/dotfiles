@@ -8,6 +8,12 @@
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 (package-initialize) ;; You might already have this line
 
+(defun refresh-emacs ()
+   (interactive)
+   (org-babel-tangle-file "~/dev/dotfiles/emacs.org")
+   (load-file "~/dev/dotfiles/emacs")
+)
+
 (setq inhibit-startup-message t)
 (show-paren-mode 1)
 (global-visual-line-mode t)
@@ -108,7 +114,7 @@
 (helm-delete-action-from-source "Insert citation" helm-source-bibtex)
 (helm-add-action-to-source "Insert citation" 'helm-bibtex-insert-citation helm-source-bibtex 0)
 
-(global-set-key (kbd "C-x x") 'helm-bibtex)
+(global-set-key (kbd "C-c x") 'helm-bibtex)
 
 (setq-default biblio-bibtex-use-autokey t)
 
@@ -134,3 +140,19 @@ bibtex-autokey-titleword-case-convert 'upcase)
 
 (setq org-log-done 'time)
 (require 'org-drill)
+
+(require 'yasnippet)
+(yas-global-mode 1)
+(require 'yasnippet-snippets)
+
+(setq deft-extensions '("txt" "markdown" "md" "org"))
+(setq deft-directory "~/dev/braindump")
+(setq deft-recursive t)
+
+(setq deft-extensions '("org"))
+(setq deft-default-extension "org")
+(setq deft-text-mode 'org-mode)
+(setq deft-use-filename-as-title t)
+(setq deft-use-filter-string-for-filename t)
+(setq deft-auto-save-interval 10)
+(global-set-key (kbd "C-c d") 'deft)

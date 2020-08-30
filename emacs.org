@@ -7,13 +7,25 @@ C-c C-v t
 
 s-TAB to toggle display level.
 
+To insert an emacs-lisp code block, type: =<src= and hit <tab>. (yasnippet)
+
 Install these packages: rg, paredit, ess, polymode (from github at the moment), magit, helm, helm-bibtex, biblio
 
 The principles
 1. Use =C-k= for eval and go.
 2. Use =C-c C-r= for eval the selection.
-3. Use =C-x= or =C-c= plus a single character for frequently used commands. Put it in the LHS of the keyboard if possible. For example, helm-bibtex is =C-x x=.
-4. Don't care about speed of starting up. It should only be done once using emacs daemon and emacsclient. (Looking at the =myaliaes.sh=. It has been mapped to just a single =e=)
+3. Don't care about speed of starting up. It should only be done once using emacs daemon and emacsclient. (Looking at the =myaliaes.sh=. It has been mapped to just a single =e=)
+4. Use =C-c= plus a single character for frequently used commands. Put it in the LHS of the keyboard if possible. Most of the =C-c= combinations are not used. For example, helm-bibtex is =C-c x=.
+
+#+caption: Keys
+| Keyboard | command       |
+|----------+---------------|
+| =C-c x=  | helm-bibte*x* |
+| =C-c d=  | *d*eft        |
+| =C-c m=  | reco*m*pile   |
+| =C-c g=  | ma*g*it       |
+
+
 
 * Theme
 #+BEGIN_SRC emacs-lisp
@@ -32,6 +44,16 @@ Initialize package mode
   ;; For important compatibility libraries like cl-lib
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 (package-initialize) ;; You might already have this line
+#+END_SRC
+
+* Customized functions
+
+#+BEGIN_SRC emacs-lisp
+(defun refresh-emacs ()
+   (interactive)
+   (org-babel-tangle-file "~/dev/dotfiles/emacs.org")
+   (load-file "~/dev/dotfiles/emacs")
+)
 #+END_SRC
 
 * General settings
@@ -77,7 +99,7 @@ Paren display; visual line mode
 
 * Ido mode
 
-BTW: C-j to confirm.
+BTW: C-j to confirm. Disabled for using Helm instead.
 
 #+BEGIN_SRC emacs-lisp
 ;; (setq ido-enable-flex-matching t)
@@ -92,7 +114,7 @@ BTW: C-j to confirm.
 (rg-enable-default-bindings)
 #+END_SRC
 
-* Emacs Speaks Statistics
+* Emacs Speaks Statistics (ESS)
 
 - M-` to insert pipe
 - C-q to eval-and-go (override the original C-q, but I don't use it anyway.)
@@ -168,9 +190,10 @@ Clone them into ~/tools
 (global-set-key (kbd "C-x b") #'helm-mini)
 (helm-mode 1)
 #+END_SRC
+
 * BibTex related stuff
 
-C-x x to initialize helm-bibtex
+C-c x to initialize helm-bibtex
 
 The default action is now citation (mostly in markdown mode).
 
@@ -193,9 +216,11 @@ To cite multiple item, select each one with C-<SPC> and then press enter.
 (helm-delete-action-from-source "Insert citation" helm-source-bibtex)
 (helm-add-action-to-source "Insert citation" 'helm-bibtex-insert-citation helm-source-bibtex 0)
 
-(global-set-key (kbd "C-x x") 'helm-bibtex)
+(global-set-key (kbd "C-c x") 'helm-bibtex)
 
 #+END_SRC
+
+Customized default cite key generation.
 
 #+BEGIN_SRC emacs-lisp
 (setq-default biblio-bibtex-use-autokey t)
@@ -223,9 +248,37 @@ bibtex-autokey-titleword-case-convert 'upcase)
 ;; for M-x info
 (define-key Info-mode-map (kbd "C-q") 'eir-eval-in-ielm)
 #+END_SRC
+
 * org
 #+BEGIN_SRC emacs-lisp
 (setq org-log-done 'time)
 (require 'org-drill)
 
 #+END_SRC
+
+* yas
+
+#+BEGIN_SRC emacs-lisp
+(require 'yasnippet)
+(yas-global-mode 1)
+(require 'yasnippet-snippets)
+#+END_SRC
+
+* deft
+
+My braindump / Zettelkasten.
+  
+#+BEGIN_SRC emacs-lisp
+(setq deft-extensions '("txt" "markdown" "md" "org"))
+(setq deft-directory "~/dev/braindump")
+(setq deft-recursive t)
+
+(setq deft-extensions '("org"))
+(setq deft-default-extension "org")
+(setq deft-text-mode 'org-mode)
+(setq deft-use-filename-as-title t)
+(setq deft-use-filter-string-for-filename t)
+(setq deft-auto-save-interval 10)
+(global-set-key (kbd "C-c d") 'deft)
+#+END_SRC
+

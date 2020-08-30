@@ -16,7 +16,7 @@ alias rmegacheck='rr "devtools::check(manual = TRUE, remote = TRUE)"'
 alias rtest='rr "devtools::test()"'
 alias pweb='python -m SimpleHTTPServer 8000'
 alias refresh='source ~/.zshrc'
-alias editalias='emacs ~/.myaliases.sh'
+alias editalias='e ~/.myaliases.sh'
 alias rbuild='rr "devtools::build()"'
 alias rspell='rr "devtools::spell_check()"'
 alias rrelease='rr "devtools::release()"'
@@ -27,6 +27,7 @@ alias gephi='~/tools/gephi-0.9.2/bin/gephi'
 alias zotero='~/tools/Zotero_linux-x86_64/zotero'
 alias makepkg='rr "usethis::create_package(\"`pwd`\")"'
 alias g++-6='g++'
+alias killemacs="emacsclient -e '(save-buffers-kill-emacs)'"
 
 function rmd() {
     rr "rmarkdown::render('$1')"

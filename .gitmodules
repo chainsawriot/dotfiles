@@ -1,0 +1,3 @@
+[submodule "r-snippets"]
+	path = r-snippets
+	url = https://github.com/gzt/r-snippets.git

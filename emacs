@@ -11,12 +11,20 @@
 (defun refresh-emacs ()
    (interactive)
    (org-babel-tangle-file "~/dev/dotfiles/emacs.org")
+   ;;(byte-compile-file "~/dev/dotfiles/emacs")
    (load-file "~/dev/dotfiles/emacs")
 )
+(global-set-key (kbd "C-c e") #'refresh-emacs)
 
 (setq inhibit-startup-message t)
 (show-paren-mode 1)
 (global-visual-line-mode t)
+(tool-bar-mode 0)
+(menu-bar-mode 0)
+
+(set-register ?q '(file . "~/dev/dotfiles/emacs.org"))
+(set-register ?w '(file . "~/dev/braindump/deutsch.org"))
+(set-register ?e '(file . "~/dev/braindump/brain/brain.org"))
 
 (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
 (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
@@ -33,6 +41,8 @@
  '(package-selected-packages
    (quote
     (eval-in-repl racket-mode ebib vterm poly-R stan-mode dockerfile-mode docker rg polymode paredit markdown-mode magit inf-ruby flymake-ruby cider))))
+
+(setq inferior-lisp-program "clisp")
 
 (setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
       backup-by-copying t    ; Don't delink hardlinks
@@ -52,7 +62,7 @@
 (require 'ess-r-mode)
 (define-key ess-r-mode-map "_" 'ess-insert-assign)
 (define-key inferior-ess-r-mode-map "_" 'ess-insert-assign)
-(setq ess-r-package-auto-set-evaluation-env nil)
+(setq ess-r-package-auto-enable-namespaced-evaluation nil)
 
 (setq ess-ask-for-ess-directory nil)
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -70,7 +80,7 @@
 (defalias 'lp 'ess-r-devtools-load-package)
 
 (load-file "~/dev/ess_rproj/ess_rproj.el")
-(add-hook 'ess-mode-hook #'ess_rproj)
+(add-hook 'ess-mode-hook #'ess-rproj)
 
 (require 'rainbow-delimiters)
 (add-hook 'ess-mode-hook #'rainbow-delimiters-mode)
@@ -141,9 +151,32 @@ bibtex-autokey-titleword-case-convert 'upcase)
 (setq org-log-done 'time)
 (require 'org-drill)
 
+(org-babel-do-load-languages
+  'org-babel-load-languages
+  '((emacs-lisp . t)
+    (lisp . t)))
+
+(setq org-default-notes-file "~/dev/braindump/brain/brain.org")
+(setq org-agenda-files '("~/dev/braindump/brain/brain.org"))
+(global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "C-c a") 'org-agenda)
+
+(setq org-capture-templates
+       '(("t" "todo" entry (file org-default-notes-file)
+	  "* TODO %?\n%u\n%a\n")
+	 ("m" "Meeting" entry (file org-default-notes-file)
+	  "* MEETING with %? :MEETING:\n%t")
+	 ("i" "Idea" entry (file org-default-notes-file)
+	  "* %? :IDEA: \n%t")
+	  ))
+
+(require 'ox-md)
+
 (require 'yasnippet)
-(yas-global-mode 1)
 (require 'yasnippet-snippets)
+
+(add-to-list 'yas-snippet-dirs "~/dev/dotfiles/r-snippets")
+(yas-global-mode 1)
 
 (setq deft-extensions '("txt" "markdown" "md" "org"))
 (setq deft-directory "~/dev/braindump")

@@ -1,30 +1,32 @@
 #+TITLE: Emacs Configuration
 #+PROPERTY: header-args :tangle emacs
 
-Tangle this into emacs config by M-x org-babel-tangle
-
 C-c C-v t
+
+Tangle this into emacs config by M-x org-babel-tangle
 
 s-TAB to toggle display level.
 
-To insert an emacs-lisp code block, type: =<src= and hit <tab>. (yasnippet)
+To insert an emacs-lisp code block, type: =<se= and hit <tab>. (yasnippet)
 
 Install these packages: rg, paredit, ess, polymode (from github at the moment), magit, helm, helm-bibtex, biblio
 
 The principles
 1. Use =C-k= for eval and go.
 2. Use =C-c C-r= for eval the selection.
-3. Don't care about speed of starting up. It should only be done once using emacs daemon and emacsclient. (Looking at the =myaliaes.sh=. It has been mapped to just a single =e=)
+3. Don't care about speed of starting up. It should only be done once using emacs daemon and emacsclient. (Looking at the =myaliases.sh=. It has been mapped to just a single =e=)
 4. Use =C-c= plus a single character for frequently used commands. Put it in the LHS of the keyboard if possible. Most of the =C-c= combinations are not used. For example, helm-bibtex is =C-c x=.
 
 #+caption: Keys
 | Keyboard | command       |
 |----------+---------------|
-| =C-c x=  | helm-bibte*x* |
-| =C-c d=  | *d*eft        |
-| =C-c m=  | reco*m*pile   |
-| =C-c g=  | ma*g*it       |
-
+| =C-c x=  | helm-bibtex   |
+| =C-c d=  | deft          |
+| =C-c m=  | recompile     |
+| =C-c g=  | magit         |
+| =C-c m=  | refresh emacs |
+| =C-c c=  | org capture   |
+| =C-c a=  | org agenda    |
 
 
 * Theme
@@ -52,8 +54,10 @@ Initialize package mode
 (defun refresh-emacs ()
    (interactive)
    (org-babel-tangle-file "~/dev/dotfiles/emacs.org")
+   ;;(byte-compile-file "~/dev/dotfiles/emacs")
    (load-file "~/dev/dotfiles/emacs")
 )
+(global-set-key (kbd "C-c e") #'refresh-emacs)
 #+END_SRC
 
 * General settings
@@ -64,6 +68,16 @@ Paren display; visual line mode
 (setq inhibit-startup-message t)
 (show-paren-mode 1)
 (global-visual-line-mode t)
+(tool-bar-mode 0)
+(menu-bar-mode 0)
+#+END_SRC
+
+* File Registers
+
+#+BEGIN_SRC emacs-lisp
+(set-register ?q '(file . "~/dev/dotfiles/emacs.org"))
+(set-register ?w '(file . "~/dev/braindump/deutsch.org"))
+(set-register ?e '(file . "~/dev/braindump/brain/brain.org"))
 #+END_SRC
 
 * Paredit
@@ -84,6 +98,14 @@ Paren display; visual line mode
  '(package-selected-packages
    (quote
     (eval-in-repl racket-mode ebib vterm poly-R stan-mode dockerfile-mode docker rg polymode paredit markdown-mode magit inf-ruby flymake-ruby cider))))
+#+END_SRC
+
+* slime
+
+Asking slime to use clisp (GNU common lisp)
+
+#+BEGIN_SRC emacs-lisp
+(setq inferior-lisp-program "clisp")
 #+END_SRC
 
 * Backup
@@ -126,7 +148,7 @@ BTW: C-j to confirm. Disabled for using Helm instead.
 (require 'ess-r-mode)
 (define-key ess-r-mode-map "_" 'ess-insert-assign)
 (define-key inferior-ess-r-mode-map "_" 'ess-insert-assign)
-(setq ess-r-package-auto-set-evaluation-env nil)
+(setq ess-r-package-auto-enable-namespaced-evaluation nil)
 
 (setq ess-ask-for-ess-directory nil)
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -144,7 +166,7 @@ BTW: C-j to confirm. Disabled for using Helm instead.
 (defalias 'lp 'ess-r-devtools-load-package)
 
 (load-file "~/dev/ess_rproj/ess_rproj.el")
-(add-hook 'ess-mode-hook #'ess_rproj)
+(add-hook 'ess-mode-hook #'ess-rproj)
 #+END_SRC
 
 Coloring
@@ -250,24 +272,57 @@ bibtex-autokey-titleword-case-convert 'upcase)
 #+END_SRC
 
 * org
+
 #+BEGIN_SRC emacs-lisp
 (setq org-log-done 'time)
 (require 'org-drill)
 
+(org-babel-do-load-languages
+  'org-babel-load-languages
+  '((emacs-lisp . t)
+    (lisp . t)))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(setq org-default-notes-file "~/dev/braindump/brain/brain.org")
+(setq org-agenda-files '("~/dev/braindump/brain/brain.org"))
+(global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "C-c a") 'org-agenda)
+#+END_SRC
+
+Org capture template
+
+#+BEGIN_SRC emacs-lisp
+(setq org-capture-templates
+       '(("t" "todo" entry (file org-default-notes-file)
+	  "* TODO %?\n%u\n%a\n")
+	 ("m" "Meeting" entry (file org-default-notes-file)
+	  "* MEETING with %? :MEETING:\n%t")
+	 ("i" "Idea" entry (file org-default-notes-file)
+	  "* %? :IDEA: \n%t")
+	  ))
+#+END_SRC
+
+Enabling markdown export, useful for writing my blog.
+
+#+BEGIN_SRC emacs-lisp
+(require 'ox-md)
 #+END_SRC
 
 * yas
 
 #+BEGIN_SRC emacs-lisp
 (require 'yasnippet)
-(yas-global-mode 1)
 (require 'yasnippet-snippets)
+
+(add-to-list 'yas-snippet-dirs "~/dev/dotfiles/r-snippets")
+(yas-global-mode 1)
 #+END_SRC
 
 * deft
 
 My braindump / Zettelkasten.
-  
+
 #+BEGIN_SRC emacs-lisp
 (setq deft-extensions '("txt" "markdown" "md" "org"))
 (setq deft-directory "~/dev/braindump")

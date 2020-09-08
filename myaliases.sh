@@ -27,7 +27,7 @@ alias gephi='~/tools/gephi-0.9.2/bin/gephi'
 alias zotero='~/tools/Zotero_linux-x86_64/zotero'
 alias makepkg='rr "usethis::create_package(\"`pwd`\")"'
 alias g++-6='g++'
-alias killemacs="emacsclient -e '(save-buffers-kill-emacs)'"
+alias killemacs="emacsclient -e '(kill-emacs)'"
 
 function rmd() {
     rr "rmarkdown::render('$1')"

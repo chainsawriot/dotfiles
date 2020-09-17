@@ -27,7 +27,7 @@ The principles
 | =C-c m=  | refresh emacs |
 | =C-c c=  | org capture   |
 | =C-c a=  | org agenda    |
-
+| =C-c 4=  | mu4e          |
 
 * Theme
 #+BEGIN_SRC emacs-lisp
@@ -50,6 +50,8 @@ Initialize package mode
 
 * Customized functions
 
+Refreshing emacs config.
+
 #+BEGIN_SRC emacs-lisp
 (defun refresh-emacs ()
    (interactive)
@@ -58,6 +60,15 @@ Initialize package mode
    (load-file "~/dev/dotfiles/emacs")
 )
 (global-set-key (kbd "C-c e") #'refresh-emacs)
+#+END_SRC
+
+Copy the region to Mac OS X clipboard
+
+#+BEGIN_SRC emacs-lisp
+(defun pbs ()
+  (interactive)
+  (shell-command-on-region (region-beginning) (region-end) "pbcopy")
+)
 #+END_SRC
 
 * General settings
@@ -337,3 +348,56 @@ My braindump / Zettelkasten.
 (global-set-key (kbd "C-c d") 'deft)
 #+END_SRC
 
+* email mu4e and co.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
+(require 'mu4e)
+
+(setq
+ mue4e-headers-skip-duplicates  t
+ mu4e-view-show-images t
+ mu4e-view-show-addresses t
+ mu4e-compose-format-flowed nil
+ mu4e-date-format "%d/%m/%Y"
+ mu4e-headers-date-format "%d/%m/%Y"
+ mu4e-change-filenames-when-moving t
+ mu4e-attachments-dir "~/Downloads"
+ mu4e-maildir       "~/maildir"
+ mu4e-refile-folder "/Archive"
+ mu4e-sent-folder   "/Sent"
+ mu4e-drafts-folder "/Drafts"
+ mu4e-trash-folder  "/Trash")
+
+;; check email
+(setq mu4e-get-mail-command  "mbsync -a"
+      mu4e-update-interval 600)
+
+;; smtp
+(setq message-send-mail-function 'smtpmail-send-it
+     smtpmail-stream-type 'starttls
+     smtpmail-default-smtp-server "smtp.mail.uni-mannheim.de"
+     smtpmail-smtp-server "smtp.mail.uni-mannheim.de"
+     smtpmail-smtp-service 587)
+
+;; about myself
+
+(setq user-mail-address "chung-hong.chan@mzes.uni-mannheim.de"
+      mu4e-compose-reply-to-address "chung-hong.chan@mzes.uni-mannheim.de"
+      user-full-name "Chung-hong Chan")
+
+(setq mu4e-compose-signature
+   "Dr. Chung-hong Chan\nFellow\nMannheimer Zentrum für Europäische Sozialforschung (MZES)\nUniversität Mannheim\ntwitter / github: @chainsawriot")
+
+(global-set-key (kbd "C-c 4") 'mu4e)
+;; No confirm
+(setq mu4e-confirm-quit nil)
+;; short cuts
+(setq mu4e-maildir-shortcuts
+  '( (:maildir "/unimannheim/inbox"     :key  ?i)
+     (:maildir "/sent"      :key  ?s)))
+
+;; mu4e-alert
+(require 'mu4e-alert)
+(add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+#+END_SRC

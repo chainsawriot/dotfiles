@@ -16,6 +16,11 @@
 )
 (global-set-key (kbd "C-c e") #'refresh-emacs)
 
+(defun pbs ()
+  (interactive)
+  (shell-command-on-region (region-beginning) (region-end) "pbcopy")
+)
+
 (setq inhibit-startup-message t)
 (show-paren-mode 1)
 (global-visual-line-mode t)
@@ -38,9 +43,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(helm-completion-style 'emacs)
  '(package-selected-packages
-   (quote
-    (eval-in-repl racket-mode ebib vterm poly-R stan-mode dockerfile-mode docker rg polymode paredit markdown-mode magit inf-ruby flymake-ruby cider))))
+   '(yaml-mode eval-in-repl racket-mode ebib vterm poly-R stan-mode dockerfile-mode docker rg polymode paredit markdown-mode magit inf-ruby flymake-ruby cider)))
 
 (setq inferior-lisp-program "clisp")
 
@@ -189,3 +194,59 @@ bibtex-autokey-titleword-case-convert 'upcase)
 (setq deft-use-filter-string-for-filename t)
 (setq deft-auto-save-interval 10)
 (global-set-key (kbd "C-c d") 'deft)
+
+(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
+(require 'mu4e)
+
+(setq
+ mue4e-headers-skip-duplicates  t
+ mu4e-view-show-images t
+ mu4e-view-show-addresses t
+ mu4e-compose-format-flowed nil
+ mu4e-date-format "%d/%m/%Y"
+ mu4e-headers-date-format "%d/%m/%Y"
+ mu4e-change-filenames-when-moving t
+ mu4e-attachments-dir "~/Downloads"
+ mu4e-maildir       "~/maildir"
+ mu4e-refile-folder "/Archive"
+ mu4e-sent-folder   "/Sent"
+ mu4e-drafts-folder "/Drafts"
+ mu4e-trash-folder  "/Trash")
+
+;; check email
+(setq mu4e-get-mail-command  "mbsync -a"
+      mu4e-update-interval 600)
+
+;; smtp
+(setq message-send-mail-function 'smtpmail-send-it
+     smtpmail-stream-type 'starttls
+     smtpmail-default-smtp-server "smtp.mail.uni-mannheim.de"
+     smtpmail-smtp-server "smtp.mail.uni-mannheim.de"
+     smtpmail-smtp-service 587)
+
+;; about myself
+
+(setq user-mail-address "chung-hong.chan@mzes.uni-mannheim.de"
+      mu4e-compose-reply-to-address "chung-hong.chan@mzes.uni-mannheim.de"
+      user-full-name "Chung-hong Chan")
+
+(setq mu4e-compose-signature
+   "Dr. Chung-hong Chan\nFellow\nMannheimer Zentrum für Europäische Sozialforschung (MZES)\nUniversität Mannheim\ntwitter / github: @chainsawriot")
+
+(global-set-key (kbd "C-c 4") 'mu4e)
+;; No confirm
+(setq mu4e-confirm-quit nil)
+;; short cuts
+(setq mu4e-maildir-shortcuts
+  '( (:maildir "/unimannheim/inbox"     :key  ?i)
+     (:maildir "/sent"      :key  ?s)))
+
+;; mu4e-alert
+(require 'mu4e-alert)
+(add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

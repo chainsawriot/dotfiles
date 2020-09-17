@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: rie
+# key: rie
+# --
+rio::export("$1")$0

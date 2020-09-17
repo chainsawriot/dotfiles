@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: hehe
+# key: hehe
+# --
+here::here($1)$0

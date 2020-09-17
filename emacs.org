@@ -9,8 +9,6 @@ s-TAB to toggle display level.
 
 To insert an emacs-lisp code block, type: =<se= and hit <tab>. (yasnippet)
 
-Install these packages: rg, paredit, ess, polymode (from github at the moment), magit, helm, helm-bibtex, biblio
-
 The principles
 1. Use =C-k= for eval and go.
 2. Use =C-c C-r= for eval the selection.
@@ -18,7 +16,6 @@ The principles
 4. Use =C-c= plus a single character for frequently used commands. Put it in the LHS of the keyboard if possible. Most of the =C-c= combinations are not used. For example, helm-bibtex is =C-c x=.
 
 Setting up: please install ess via apt-get.
-
 
 #+caption: Keys
 | Keyboard | command       |
@@ -205,8 +202,8 @@ BTW: C-j to confirm. Disabled for using Helm instead.
   (defalias 'lp 'ess-r-devtools-load-package)
 )
 
-(load-file "~/dev/ess_rproj/ess_rproj.el")
-(add-hook 'ess-mode-hook #'ess-rproj)
+;;(load-file "~/dev/ess_rproj/ess_rproj.el")
+;;(add-hook 'ess-mode-hook #'ess-rproj)
 #+END_SRC
 
 Coloring
@@ -318,39 +315,35 @@ Customized default cite key generation.
 * org
 
 #+BEGIN_SRC emacs-lisp
-;;(setq org-log-done 'time)
-;;(require 'org-drill)
+(setq org-log-done 'time)
 
-;;(org-babel-do-load-languages
-;;  'org-babel-load-languages
-;;  '((emacs-lisp . t)
-;;    (lisp . t)))
+(require 'ox-md)
+
+
+(org-babel-do-load-languages
+'org-babel-load-languages
+'((emacs-lisp . t)
+(lisp . t)))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-;;  (setq org-default-notes-file "~/dev/braindump/brain/brain.org")
-;;  (setq org-agenda-files '("~/dev/braindump/brain/brain.org"))
-;;  (global-set-key (kbd "C-c c") 'org-capture)
-;;  (global-set-key (kbd "C-c a") 'org-agenda) 
+(setq org-default-notes-file "~/dev/braindump/brain/brain.org")
+(setq org-agenda-files '("~/dev/braindump/brain/brain.org"))
+(global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "C-c a") 'org-agenda) 
 #+END_SRC
 
 Org capture template
 
 #+BEGIN_SRC emacs-lisp
-  ;; (setq org-capture-templates
-  ;;        '(("t" "todo" entry (file org-default-notes-file)
-  ;; 	  "* TODO %?\n%u\n%a\n")
-  ;; 	 ("m" "Meeting" entry (file org-default-notes-file)
-  ;; 	  "* MEETING with %? :MEETING:\n%t")
-  ;; 	 ("i" "Idea" entry (file org-default-notes-file)
-  ;; 	  "* %? :IDEA: \n%t")
-  ;; 	  ))
-#+END_SRC
-
-Enabling markdown export, useful for writing my blog.
-
-#+BEGIN_SRC emacs-lisp
-;; (require 'ox-md)
+(setq org-capture-templates
+'(("t" "todo" entry (file org-default-notes-file)
+"* TODO %?\n%u\n%a\n")
+("m" "Meeting" entry (file org-default-notes-file)
+"* MEETING with %? :MEETING:\n%t")
+("i" "Idea" entry (file org-default-notes-file)
+"* %? :IDEA: \n%t")
+))
 #+END_SRC
 
 * yas
@@ -358,11 +351,15 @@ Enabling markdown export, useful for writing my blog.
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet
   :init
-  (add-to-list 'yas-snippet-dirs "~/dev/dotfiles/my-snippets")
   (yas-global-mode 1)
-  :config
-  (use-package yasnippet-snippets)
 )
+
+(use-package yasnippet-snippets
+  :after yasnippet
+)
+
+(setq yas-snippet-dirs (append yas-snippet-dirs
+                               '("~/dev/dotfiles/my-snippets")))
 #+END_SRC
 
 * deft
@@ -370,17 +367,20 @@ Enabling markdown export, useful for writing my blog.
 My braindump / Zettelkasten.
 
 #+BEGIN_SRC emacs-lisp
-  ;; (setq deft-extensions '("txt" "markdown" "md" "org"))
-  ;; (setq deft-directory "~/dev/braindump")
-  ;; (setq deft-recursive t)
+(use-package deft
+  :init
+  (setq deft-extensions '("txt" "markdown" "md" "org"))
+  (setq deft-directory "~/dev/braindump")
+  (setq deft-recursive t)
+  (setq deft-extensions '("org"))
+  (setq deft-default-extension "org")
+  (setq deft-text-mode 'org-mode)
+  (setq deft-use-filename-as-title t)
+  (setq deft-use-filter-string-for-filename t)
+  (setq deft-auto-save-interval 10)
+  (global-set-key (kbd "C-c d") 'deft)  
+)
 
-  ;; (setq deft-extensions '("org"))
-  ;; (setq deft-default-extension "org")
-  ;; (setq deft-text-mode 'org-mode)
-  ;; (setq deft-use-filename-as-title t)
-  ;; (setq deft-use-filter-string-for-filename t)
-  ;; (setq deft-auto-save-interval 10)
-  ;; (global-set-key (kbd "C-c d") 'deft)
 #+END_SRC
 
 * email mu4e and co.
@@ -436,3 +436,4 @@ My braindump / Zettelkasten.
   ;; (require 'mu4e-alert)
   ;; (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
 #+END_SRC
+

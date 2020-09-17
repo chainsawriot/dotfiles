@@ -105,8 +105,8 @@
   (defalias 'lp 'ess-r-devtools-load-package)
 )
 
-(load-file "~/dev/ess_rproj/ess_rproj.el")
-(add-hook 'ess-mode-hook #'ess-rproj)
+;;(load-file "~/dev/ess_rproj/ess_rproj.el")
+;;(add-hook 'ess-mode-hook #'ess-rproj)
 
 (use-package rainbow-delimiters
    :init
@@ -176,49 +176,55 @@
   (setq eir-ielm-eval-in-current-buffer t)
 )
 
-;;(setq org-log-done 'time)
-;;(require 'org-drill)
+(setq org-log-done 'time)
 
-;;(org-babel-do-load-languages
-;;  'org-babel-load-languages
-;;  '((emacs-lisp . t)
-;;    (lisp . t)))
+(require 'ox-md)
 
-;;  (setq org-default-notes-file "~/dev/braindump/brain/brain.org")
-;;  (setq org-agenda-files '("~/dev/braindump/brain/brain.org"))
-;;  (global-set-key (kbd "C-c c") 'org-capture)
-;;  (global-set-key (kbd "C-c a") 'org-agenda)
 
-;; (setq org-capture-templates
-;;        '(("t" "todo" entry (file org-default-notes-file)
-;; 	  "* TODO %?\n%u\n%a\n")
-;; 	 ("m" "Meeting" entry (file org-default-notes-file)
-;; 	  "* MEETING with %? :MEETING:\n%t")
-;; 	 ("i" "Idea" entry (file org-default-notes-file)
-;; 	  "* %? :IDEA: \n%t")
-;; 	  ))
+(org-babel-do-load-languages
+'org-babel-load-languages
+'((emacs-lisp . t)
+(lisp . t)))
 
-;; (require 'ox-md)
+(setq org-default-notes-file "~/dev/braindump/brain/brain.org")
+(setq org-agenda-files '("~/dev/braindump/brain/brain.org"))
+(global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "C-c a") 'org-agenda)
+
+(setq org-capture-templates
+'(("t" "todo" entry (file org-default-notes-file)
+"* TODO %?\n%u\n%a\n")
+("m" "Meeting" entry (file org-default-notes-file)
+"* MEETING with %? :MEETING:\n%t")
+("i" "Idea" entry (file org-default-notes-file)
+"* %? :IDEA: \n%t")
+))
 
 (use-package yasnippet
   :init
-  (add-to-list 'yas-snippet-dirs "~/dev/dotfiles/r-snippets")
   (yas-global-mode 1)
-  :config
-  (use-package yasnippet-snippets)
 )
 
-;; (setq deft-extensions '("txt" "markdown" "md" "org"))
-;; (setq deft-directory "~/dev/braindump")
-;; (setq deft-recursive t)
+(use-package yasnippet-snippets
+  :after yasnippet
+)
 
-;; (setq deft-extensions '("org"))
-;; (setq deft-default-extension "org")
-;; (setq deft-text-mode 'org-mode)
-;; (setq deft-use-filename-as-title t)
-;; (setq deft-use-filter-string-for-filename t)
-;; (setq deft-auto-save-interval 10)
-;; (global-set-key (kbd "C-c d") 'deft)
+(setq yas-snippet-dirs (append yas-snippet-dirs
+                               '("~/dev/dotfiles/my-snippets")))
+
+(use-package deft
+  :init
+  (setq deft-extensions '("txt" "markdown" "md" "org"))
+  (setq deft-directory "~/dev/braindump")
+  (setq deft-recursive t)
+  (setq deft-extensions '("org"))
+  (setq deft-default-extension "org")
+  (setq deft-text-mode 'org-mode)
+  (setq deft-use-filename-as-title t)
+  (setq deft-use-filter-string-for-filename t)
+  (setq deft-auto-save-interval 10)
+  (global-set-key (kbd "C-c d") 'deft)  
+)
 
 ;; (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
 ;; (require 'mu4e)
@@ -269,17 +275,3 @@
 ;; ;; mu4e-alert
 ;; (require 'mu4e-alert)
 ;; (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (yasnippet-snippets yasnippet eval-in-repl poly-markdown poly-mardown rainbow-delimiters rainbow-deliminters-mode rainbow-mode rainbow-deliminters ess use-package rg magit helm))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

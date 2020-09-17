@@ -3,3 +3,5 @@
 	email = chainsawtiney@gmail.com
 [core]
 	editor = e
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/

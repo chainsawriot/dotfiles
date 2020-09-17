@@ -84,7 +84,7 @@ fi
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-source ~/.myaliases.sh
+source ~/myaliases.sh
 [ -f ~/.localrc ] && source ~/.localrc
 if [ -d ~/.rbenv ]; then
    export PATH="$HOME/.rbenv/bin:$PATH"
@@ -94,6 +94,10 @@ fi
 PATH=$HOME/.local/bin:$PATH
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Ubuntu
+[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && source /usr/share/doc/fzf/examples/key-bindings.zsh
+[ -f /usr/share/doc/fzf/examples/completion.zsh ] && source /usr/share/doc/fzf/examples/completion.zsh
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 

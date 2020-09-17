@@ -1,0 +1,4 @@
+* My dotfiles
+
+Previously, these dot files were deployed by rcm. It was not very efficient and therefore, I have written a simple deployment script.
+

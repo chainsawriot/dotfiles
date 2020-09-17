@@ -1,5 +1,5 @@
 #+TITLE: Emacs Configuration
-#+PROPERTY: header-args :tangle emacs
+#+PROPERTY: header-args :tangle .emacs
 
 C-c C-v t
 
@@ -16,6 +16,9 @@ The principles
 2. Use =C-c C-r= for eval the selection.
 3. Don't care about speed of starting up. It should only be done once using emacs daemon and emacsclient. (Looking at the =myaliases.sh=. It has been mapped to just a single =e=)
 4. Use =C-c= plus a single character for frequently used commands. Put it in the LHS of the keyboard if possible. Most of the =C-c= combinations are not used. For example, helm-bibtex is =C-c x=.
+
+Setting up: please install ess via apt-get.
+
 
 #+caption: Keys
 | Keyboard | command       |
@@ -46,6 +49,14 @@ Initialize package mode
   ;; For important compatibility libraries like cl-lib
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 (package-initialize) ;; You might already have this line
+
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(require 'use-package)
+(setq use-package-always-ensure t)
+
 #+END_SRC
 
 * Customized functions
@@ -57,7 +68,7 @@ Refreshing emacs config.
    (interactive)
    (org-babel-tangle-file "~/dev/dotfiles/emacs.org")
    ;;(byte-compile-file "~/dev/dotfiles/emacs")
-   (load-file "~/dev/dotfiles/emacs")
+   (load-file "~/dev/dotfiles/.emacs")
 )
 (global-set-key (kbd "C-c e") #'refresh-emacs)
 #+END_SRC
@@ -81,6 +92,20 @@ Paren display; visual line mode
 (global-visual-line-mode t)
 (tool-bar-mode 0)
 (menu-bar-mode 0)
+(fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+* helm
+
+#+BEGIN_SRC emacs-lisp
+(use-package helm
+  :bind (("M-x" . helm-M-x)
+         ("C-x r b" . helm-filtered-bookmarks)
+         ("C-x C-f" . helm-find-files)
+         ("M-y" . helm-show-kill-ring)
+	 ("C-x b" . helm-mini))
+  :config
+  (helm-mode 1))
 #+END_SRC
 
 * File Registers
@@ -94,21 +119,21 @@ Paren display; visual line mode
 * Paredit
 
 #+BEGIN_SRC emacs-lisp
-(autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
-(add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
-(add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-(add-hook 'ielm-mode-hook             #'enable-paredit-mode)
-(add-hook 'lisp-mode-hook             #'enable-paredit-mode)
-(add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
-(add-hook 'scheme-mode-hook           #'enable-paredit-mode)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (eval-in-repl racket-mode ebib vterm poly-R stan-mode dockerfile-mode docker rg polymode paredit markdown-mode magit inf-ruby flymake-ruby cider))))
+  ;; (autoload;;  'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+  ;; (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+  ;; (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+  ;; (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
+  ;; (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+  ;; (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+  ;; (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+  ;; (custom-set-variables
+  ;;  ;; custom-set-variables was added by Custom.
+  ;;  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;;  ;; Your init file should contain only one such instance.
+  ;;  ;; If there is more than one, they won't work right.
+  ;;  '(package-selected-packages
+  ;;    (quote
+  ;;     (eval-in-repl racket-mode ebib vterm poly-R stan-mode dockerfile-mode docker rg polymode paredit markdown-mode magit inf-ruby flymake-ruby cider))))
 #+END_SRC
 
 * slime
@@ -116,7 +141,7 @@ Paren display; visual line mode
 Asking slime to use clisp (GNU common lisp)
 
 #+BEGIN_SRC emacs-lisp
-(setq inferior-lisp-program "clisp")
+;;(setq inferior-lisp-program "clisp")
 #+END_SRC
 
 * Backup
@@ -143,8 +168,9 @@ BTW: C-j to confirm. Disabled for using Helm instead.
 * rg
 
 #+BEGIN_SRC emacs-lisp
-(require 'rg)
-(rg-enable-default-bindings)
+(use-package rg
+  :config
+  (rg-enable-default-bindings))
 #+END_SRC
 
 * Emacs Speaks Statistics (ESS)
@@ -156,25 +182,28 @@ BTW: C-j to confirm. Disabled for using Helm instead.
 - ess_rproj
 
 #+BEGIN_SRC emacs-lisp
-(require 'ess-r-mode)
-(define-key ess-r-mode-map "_" 'ess-insert-assign)
-(define-key inferior-ess-r-mode-map "_" 'ess-insert-assign)
-(setq ess-r-package-auto-enable-namespaced-evaluation nil)
-
-(setq ess-ask-for-ess-directory nil)
-(fset 'yes-or-no-p 'y-or-n-p)
-
 (defun then_R_operator ()
   "R - %>% operator or 'then' pipe operator"
   (interactive)
   (just-one-space 1)
   (insert "%>%")
   (just-one-space 1))
-  
-(define-key ess-mode-map (kbd "M-`") 'then_R_operator)
-(define-key inferior-ess-mode-map (kbd "M-`") 'then_R_operator)
-(define-key ess-mode-map (kbd "C-q") 'ess-eval-region-or-line-and-step)
-(defalias 'lp 'ess-r-devtools-load-package)
+
+(use-package ess
+  :bind (
+  :map ess-mode-map 
+  ("_" . 'ess-insert-assign)
+  ("M-`" . 'then_R_operator)
+  ("C-q" . 'ess-eval-region-or-line-and-step)
+  :map inferior-ess-mode-map 
+  ("_" . 'ess-insert-assign)
+  ("M-`" . 'then_R_operator))
+  :config
+  (require 'ess-r-mode)
+  (setq ess-r-package-auto-enable-namespaced-evaluation nil)
+  (setq ess-ask-for-ess-directory nil)
+  (defalias 'lp 'ess-r-devtools-load-package)
+)
 
 (load-file "~/dev/ess_rproj/ess_rproj.el")
 (add-hook 'ess-mode-hook #'ess-rproj)
@@ -183,48 +212,48 @@ BTW: C-j to confirm. Disabled for using Helm instead.
 Coloring
 
 #+BEGIN_SRC emacs-lisp
-(require 'rainbow-delimiters)
-(add-hook 'ess-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'ess-mode-hook 'hs-minor-mode)
-
-(require 'rainbow-mode)
-(dolist (hook '(ess-mode-hook inferior-ess-mode-hook))
-(add-hook hook 'rainbow-turn-on))
+(use-package rainbow-delimiters
+   :init
+   (add-hook 'ess-mode-hook #'rainbow-delimiters-mode)
+   (add-hook 'ess-mode-hook 'hs-minor-mode)
+)
+(use-package rainbow-mode
+   :init
+   (dolist (hook '(ess-mode-hook inferior-ess-mode-hook))
+   (add-hook hook 'rainbow-turn-on))   
+)
 #+END_SRC
 
 * Poly Mode
 
-Clone them into ~/tools
-
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "/Users/chainsaw/tools/polymode")
-(add-to-list 'load-path "/Users/chainsaw/tools/poly-markdown")
-(require 'poly-markdown)
-(add-to-list 'auto-mode-alist '("\\.rmd" . poly-markdown-mode))
+(use-package poly-markdown
+  :init
+  (add-to-list 'auto-mode-alist '("\\.rmd" . poly-markdown-mode))
+)
 #+END_SRC
 
-* Set keys
+* Magit
+
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+  :init
+  (global-set-key (kbd "C-c g") 'magit-status))
+#+END_SRC
+
+* Make
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-c m") 'recompile)
-(global-set-key (kbd "C-c g") 'magit-status)
-(global-set-key (kbd "C-c r") 'inf-ruby)
-;; (global-set-key (kbd "C-c d") 'ess-r-devtools-load-package)
 #+END_SRC
 
-* helm
+* Ruby
 
 #+BEGIN_SRC emacs-lisp
-(require 'helm)
-(global-set-key (kbd "M-x") #'helm-M-x)
-(global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
-(global-set-key (kbd "C-x C-f") #'helm-find-files)
-(global-set-key (kbd "M-y") #'helm-show-kill-ring)
-(global-set-key (kbd "C-x b") #'helm-mini)
-(helm-mode 1)
+;;(global-set-key (kbd "C-c r") 'inf-ruby)
 #+END_SRC
 
-* BibTex related stuff
+* BibTex: helm-bibtex and bibilo
 
 C-c x to initialize helm-bibtex
 
@@ -233,101 +262,107 @@ The default action is now citation (mostly in markdown mode).
 To cite multiple item, select each one with C-<SPC> and then press enter.
 
 #+BEGIN_SRC emacs-lisp
-(require 'helm-bibtex)
-(autoload 'helm-bibtex "helm-bibtex" "" t)
-(setq bibtex-completion-bibliography
-      '("~/dev/chcbibtex/bib.bib"))
-(setq bibtex-completion-notes-path "~/dev/chcbibtex/notes.org")
-(setq bibtex-completion-format-citation-functions
-  '((org-mode      . bibtex-completion-format-citation-org-link-to-PDF)
-    (latex-mode    . bibtex-completion-format-citation-cite)
-    (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
-    (default       . bibtex-completion-format-citation-pandoc-citeproc)))
+  ;; (require 'helm-bibtex)
+  ;; (autoload 'helm-bibtex "helm-bibtex" "" t)
+  ;; (setq bibtex-completion-bibliography
+  ;;       '("~/dev/chcbibtex/bib.bib"))
+  ;; (setq bibtex-completion-notes-path "~/dev/chcbibtex/notes.org")
+  ;; (setq bibtex-completion-format-citation-functions
+  ;;   '((org-mode      . bibtex-completion-format-citation-org-link-to-PDF)
+  ;;     (latex-mode    . bibtex-completion-format-citation-cite)
+  ;;     (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
+  ;;     (default       . bibtex-completion-format-citation-pandoc-citeproc)))
 
-;; make bibtex-completion-insert-citation the default action
+  ;; ;; make bibtex-completion-insert-citation the default action
 
-(helm-delete-action-from-source "Insert citation" helm-source-bibtex)
-(helm-add-action-to-source "Insert citation" 'helm-bibtex-insert-citation helm-source-bibtex 0)
+  ;; (helm-delete-action-from-source "Insert citation" helm-source-bibtex)
+  ;; (helm-add-action-to-source "Insert citation" 'helm-bibtex-insert-citation helm-source-bibtex 0)
 
-(global-set-key (kbd "C-c x") 'helm-bibtex)
+  ;; (global-set-key (kbd "C-c x") 'helm-bibtex)
 
 #+END_SRC
 
 Customized default cite key generation.
 
 #+BEGIN_SRC emacs-lisp
-(setq-default biblio-bibtex-use-autokey t)
+  ;; (setq-default biblio-bibtex-use-autokey t)
 
-(setq-default
-bibtex-autokey-name-year-separator ":"
-bibtex-autokey-year-title-separator ":"
-bibtex-autokey-year-length 4
-bibtex-autokey-titlewords 3
-bibtex-autokey-titleword-length -1 ;; -1 means exactly one
-bibtex-autokey-titlewords-stretch 0
-bibtex-autokey-titleword-separator ""
-bibtex-autokey-titleword-case-convert 'upcase)
+  ;; (setq-default
+  ;; bibtex-autokey-name-year-separator ":"
+  ;; bibtex-autokey-year-title-separator ":"
+  ;; bibtex-autokey-year-length 4
+  ;; bibtex-autokey-titlewords 3
+  ;; bibtex-autokey-titleword-length -1 ;; -1 means exactly one
+  ;; bibtex-autokey-titlewords-stretch 0
+  ;; bibtex-autokey-titleword-separator ""
+  ;; bibtex-autokey-titleword-case-convert 'upcase)
 #+END_SRC
 * ielm
 
 #+BEGIN_SRC emacs-lisp
-(require 'eval-in-repl-ielm)
-;; Evaluate expression in the current buffer.
-(setq eir-ielm-eval-in-current-buffer t)
-;; for .el files
-(define-key emacs-lisp-mode-map (kbd "C-q") 'eir-eval-in-ielm)
-;; for *scratch*
-(define-key lisp-interaction-mode-map (kbd "C-q") 'eir-eval-in-ielm)
-;; for M-x info
-(define-key Info-mode-map (kbd "C-q") 'eir-eval-in-ielm)
+(use-package eval-in-repl
+  :bind (
+  :map emacs-lisp-mode-map
+  ("C-q" . 'eir-eval-in-ielm)
+  :map lisp-interaction-mode-map
+  ("C-q" . 'eir-eval-in-ielm)
+  :map Info-mode-map
+  ("C-q" . 'eir-eval-in-ielm))
+  :config
+  (require 'eval-in-repl-ielm)
+  :init
+  (setq eir-ielm-eval-in-current-buffer t)
+)
 #+END_SRC
 
 * org
 
 #+BEGIN_SRC emacs-lisp
-(setq org-log-done 'time)
-(require 'org-drill)
+;;(setq org-log-done 'time)
+;;(require 'org-drill)
 
-(org-babel-do-load-languages
-  'org-babel-load-languages
-  '((emacs-lisp . t)
-    (lisp . t)))
+;;(org-babel-do-load-languages
+;;  'org-babel-load-languages
+;;  '((emacs-lisp . t)
+;;    (lisp . t)))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-(setq org-default-notes-file "~/dev/braindump/brain/brain.org")
-(setq org-agenda-files '("~/dev/braindump/brain/brain.org"))
-(global-set-key (kbd "C-c c") 'org-capture)
-(global-set-key (kbd "C-c a") 'org-agenda)
+;;  (setq org-default-notes-file "~/dev/braindump/brain/brain.org")
+;;  (setq org-agenda-files '("~/dev/braindump/brain/brain.org"))
+;;  (global-set-key (kbd "C-c c") 'org-capture)
+;;  (global-set-key (kbd "C-c a") 'org-agenda) 
 #+END_SRC
 
 Org capture template
 
 #+BEGIN_SRC emacs-lisp
-(setq org-capture-templates
-       '(("t" "todo" entry (file org-default-notes-file)
-	  "* TODO %?\n%u\n%a\n")
-	 ("m" "Meeting" entry (file org-default-notes-file)
-	  "* MEETING with %? :MEETING:\n%t")
-	 ("i" "Idea" entry (file org-default-notes-file)
-	  "* %? :IDEA: \n%t")
-	  ))
+  ;; (setq org-capture-templates
+  ;;        '(("t" "todo" entry (file org-default-notes-file)
+  ;; 	  "* TODO %?\n%u\n%a\n")
+  ;; 	 ("m" "Meeting" entry (file org-default-notes-file)
+  ;; 	  "* MEETING with %? :MEETING:\n%t")
+  ;; 	 ("i" "Idea" entry (file org-default-notes-file)
+  ;; 	  "* %? :IDEA: \n%t")
+  ;; 	  ))
 #+END_SRC
 
 Enabling markdown export, useful for writing my blog.
 
 #+BEGIN_SRC emacs-lisp
-(require 'ox-md)
+;; (require 'ox-md)
 #+END_SRC
 
 * yas
 
 #+BEGIN_SRC emacs-lisp
-(require 'yasnippet)
-(require 'yasnippet-snippets)
-
-(add-to-list 'yas-snippet-dirs "~/dev/dotfiles/r-snippets")
-(yas-global-mode 1)
+(use-package yasnippet
+  :init
+  (add-to-list 'yas-snippet-dirs "~/dev/dotfiles/my-snippets")
+  (yas-global-mode 1)
+  :config
+  (use-package yasnippet-snippets)
+)
 #+END_SRC
 
 * deft
@@ -335,69 +370,69 @@ Enabling markdown export, useful for writing my blog.
 My braindump / Zettelkasten.
 
 #+BEGIN_SRC emacs-lisp
-(setq deft-extensions '("txt" "markdown" "md" "org"))
-(setq deft-directory "~/dev/braindump")
-(setq deft-recursive t)
+  ;; (setq deft-extensions '("txt" "markdown" "md" "org"))
+  ;; (setq deft-directory "~/dev/braindump")
+  ;; (setq deft-recursive t)
 
-(setq deft-extensions '("org"))
-(setq deft-default-extension "org")
-(setq deft-text-mode 'org-mode)
-(setq deft-use-filename-as-title t)
-(setq deft-use-filter-string-for-filename t)
-(setq deft-auto-save-interval 10)
-(global-set-key (kbd "C-c d") 'deft)
+  ;; (setq deft-extensions '("org"))
+  ;; (setq deft-default-extension "org")
+  ;; (setq deft-text-mode 'org-mode)
+  ;; (setq deft-use-filename-as-title t)
+  ;; (setq deft-use-filter-string-for-filename t)
+  ;; (setq deft-auto-save-interval 10)
+  ;; (global-set-key (kbd "C-c d") 'deft)
 #+END_SRC
 
 * email mu4e and co.
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
-(require 'mu4e)
+  ;; (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
+  ;; (require 'mu4e)
 
-(setq
- mue4e-headers-skip-duplicates  t
- mu4e-view-show-images t
- mu4e-view-show-addresses t
- mu4e-compose-format-flowed nil
- mu4e-date-format "%d/%m/%Y"
- mu4e-headers-date-format "%d/%m/%Y"
- mu4e-change-filenames-when-moving t
- mu4e-attachments-dir "~/Downloads"
- mu4e-maildir       "~/maildir"
- mu4e-refile-folder "/Archive"
- mu4e-sent-folder   "/Sent"
- mu4e-drafts-folder "/Drafts"
- mu4e-trash-folder  "/Trash")
+  ;; (setq
+  ;;  mue4e-headers-skip-duplicates  t
+  ;;  mu4e-view-show-images t
+  ;;  mu4e-view-show-addresses t
+  ;;  mu4e-compose-format-flowed nil
+  ;;  mu4e-date-format "%d/%m/%Y"
+  ;;  mu4e-headers-date-format "%d/%m/%Y"
+  ;;  mu4e-change-filenames-when-moving t
+  ;;  mu4e-attachments-dir "~/Downloads"
+  ;;  mu4e-maildir       "~/maildir"
+  ;;  mu4e-refile-folder "/Archive"
+  ;;  mu4e-sent-folder   "/Sent"
+  ;;  mu4e-drafts-folder "/Drafts"
+  ;;  mu4e-trash-folder  "/Trash")
 
-;; check email
-(setq mu4e-get-mail-command  "mbsync -a"
-      mu4e-update-interval 600)
+  ;; ;; check email
+  ;; (setq mu4e-get-mail-command  "mbsync -a"
+  ;;       mu4e-update-interval 600)
 
-;; smtp
-(setq message-send-mail-function 'smtpmail-send-it
-     smtpmail-stream-type 'starttls
-     smtpmail-default-smtp-server "smtp.mail.uni-mannheim.de"
-     smtpmail-smtp-server "smtp.mail.uni-mannheim.de"
-     smtpmail-smtp-service 587)
+  ;; ;; smtp
+  ;; (setq message-send-mail-function 'smtpmail-send-it
+  ;;      smtpmail-stream-type 'starttls
+  ;;      smtpmail-default-smtp-server "smtp.mail.uni-mannheim.de"
+  ;;      smtpmail-smtp-server "smtp.mail.uni-mannheim.de"
+  ;;      smtpmail-smtp-service 587)
 
-;; about myself
+  ;; ;; about myself
 
-(setq user-mail-address "chung-hong.chan@mzes.uni-mannheim.de"
-      mu4e-compose-reply-to-address "chung-hong.chan@mzes.uni-mannheim.de"
-      user-full-name "Chung-hong Chan")
+  ;; (setq user-mail-address "chung-hong.chan@mzes.uni-mannheim.de"
+  ;;       mu4e-compose-reply-to-address "chung-hong.chan@mzes.uni-mannheim.de"
+  ;;       user-full-name "Chung-hong Chan")
 
-(setq mu4e-compose-signature
-   "Dr. Chung-hong Chan\nFellow\nMannheimer Zentrum für Europäische Sozialforschung (MZES)\nUniversität Mannheim\ntwitter / github: @chainsawriot")
+  ;; (setq mu4e-compose-signature
+  ;;    "Dr. Chung-hong Chan\nFellow\nMannheimer Zentrum für Europäische Sozialforschung (MZES)\nUniversität Mannheim\ntwitter / github: @chainsawriot")
 
-(global-set-key (kbd "C-c 4") 'mu4e)
-;; No confirm
-(setq mu4e-confirm-quit nil)
-;; short cuts
-(setq mu4e-maildir-shortcuts
-  '( (:maildir "/unimannheim/inbox"     :key  ?i)
-     (:maildir "/sent"      :key  ?s)))
+  ;; (global-set-key (kbd "C-c 4") 'mu4e)
+  ;; ;; No confirm
+  ;; (setq mu4e-confirm-quit nil)
+  ;; ;; short cuts
+  ;; (setq mu4e-maildir-shortcuts
+  ;;   '( (:maildir "/unimannheim/inbox"     :key  ?i)
+  ;;      (:maildir "/sent"      :key  ?s)))
 
-;; mu4e-alert
-(require 'mu4e-alert)
-(add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+  ;; ;; mu4e-alert
+  ;; (require 'mu4e-alert)
+  ;; (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
 #+END_SRC

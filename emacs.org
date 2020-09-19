@@ -90,6 +90,8 @@ Paren display; visual line mode
 (tool-bar-mode 0)
 (menu-bar-mode 0)
 (fset 'yes-or-no-p 'y-or-n-p)
+;; I need this for pipe.
+
 #+END_SRC
 
 * helm
@@ -172,35 +174,36 @@ BTW: C-j to confirm. Disabled for using Helm instead.
 
 * Emacs Speaks Statistics (ESS)
 
-- M-` to insert pipe
-- C-q to eval-and-go (override the original C-q, but I don't use it anyway.)
+- type >> quickly to insert pipe
+- type __ quickly to insert reverse assignment
 - "_" works in the old skool way.
+- C-q to eval-and-go (override the original C-q, but I don't use it anyway.)
 - M-x lp : a quicker way to devtools::load_all()
 - ess_rproj
 
 #+BEGIN_SRC emacs-lisp
-(defun then_R_operator ()
-  "R - %>% operator or 'then' pipe operator"
-  (interactive)
-  (just-one-space 1)
-  (insert "%>%")
-  (just-one-space 1))
-
 (use-package ess
-  :bind (
-  :map ess-mode-map 
-  ("_" . 'ess-insert-assign)
-  ("M-`" . 'then_R_operator)
-  ("C-q" . 'ess-eval-region-or-line-and-step)
-  :map inferior-ess-mode-map 
-  ("_" . 'ess-insert-assign)
-  ("M-`" . 'then_R_operator))
-  :config
-  (require 'ess-r-mode)
-  (setq ess-r-package-auto-enable-namespaced-evaluation nil)
-  (setq ess-ask-for-ess-directory nil)
-  (defalias 'lp 'ess-r-devtools-load-package)
+:bind (
+:map ess-mode-map 
+("_" . 'ess-insert-assign)
+("C-q" . 'ess-eval-region-or-line-and-step)
+:map inferior-ess-mode-map 
+("_" . 'ess-insert-assign))
+:config
+(require 'ess-r-mode)
+(setq ess-r-package-auto-enable-namespaced-evaluation nil)
+(setq ess-ask-for-ess-directory nil)
+(defalias 'lp 'ess-r-devtools-load-package)
 )
+
+(use-package key-chord
+:init
+(key-chord-mode 1)
+(key-chord-define ess-mode-map ">>" " %>% ")
+(key-chord-define ess-mode-map "__" " -> ")
+)
+#+END_SRC
+
 
 ;;(load-file "~/dev/ess_rproj/ess_rproj.el")
 ;;(add-hook 'ess-mode-hook #'ess-rproj)
@@ -228,6 +231,12 @@ Coloring
   :init
   (add-to-list 'auto-mode-alist '("\\.rmd" . poly-markdown-mode))
 )
+#+END_SRC
+
+* yaml
+
+#+BEGIN_SRC emacs-lisp
+(use-package yaml-mode)
 #+END_SRC
 
 * Magit
@@ -316,6 +325,7 @@ Customized default cite key generation.
 
 #+BEGIN_SRC emacs-lisp
 (setq org-log-done 'time)
+(setq org-support-shift-select 'always)
 
 (require 'ox-md)
 
@@ -352,14 +362,15 @@ Org capture template
 (use-package yasnippet
   :init
   (yas-global-mode 1)
+  (setq yas-snippet-dirs (append yas-snippet-dirs
+                               '("~/dev/dotfiles/my-snippets")))			       
+  (yas-reload-all)
 )
 
 (use-package yasnippet-snippets
   :after yasnippet
 )
 
-(setq yas-snippet-dirs (append yas-snippet-dirs
-                               '("~/dev/dotfiles/my-snippets")))
 #+END_SRC
 
 * deft
@@ -386,54 +397,62 @@ My braindump / Zettelkasten.
 * email mu4e and co.
 
 #+BEGIN_SRC emacs-lisp
-  ;; (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
-  ;; (require 'mu4e)
+;; Mac
+(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
+;; Linux
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
+(require 'mu4e)
+(setq
+mue4e-headers-skip-duplicates  t
+mu4e-view-show-images t
+mu4e-view-show-addresses t
+mu4e-compose-format-flowed nil
+mu4e-date-format "%d/%m/%Y"
+mu4e-headers-date-format "%d/%m/%Y"
+mu4e-change-filenames-when-moving t
+mu4e-attachments-dir "~/Downloads"
+mu4e-maildir       "~/maildir"
+mu4e-refile-folder "/Archive"
+mu4e-sent-folder   "/Sent"
+mu4e-drafts-folder "/Drafts"
+mu4e-trash-folder  "/Trash")
 
-  ;; (setq
-  ;;  mue4e-headers-skip-duplicates  t
-  ;;  mu4e-view-show-images t
-  ;;  mu4e-view-show-addresses t
-  ;;  mu4e-compose-format-flowed nil
-  ;;  mu4e-date-format "%d/%m/%Y"
-  ;;  mu4e-headers-date-format "%d/%m/%Y"
-  ;;  mu4e-change-filenames-when-moving t
-  ;;  mu4e-attachments-dir "~/Downloads"
-  ;;  mu4e-maildir       "~/maildir"
-  ;;  mu4e-refile-folder "/Archive"
-  ;;  mu4e-sent-folder   "/Sent"
-  ;;  mu4e-drafts-folder "/Drafts"
-  ;;  mu4e-trash-folder  "/Trash")
+;; check email
+(setq mu4e-get-mail-command  "mbsync -a"
+  mu4e-update-interval 600)
 
-  ;; ;; check email
-  ;; (setq mu4e-get-mail-command  "mbsync -a"
-  ;;       mu4e-update-interval 600)
+;; smtp
+(setq message-send-mail-function 'smtpmail-send-it
+smtpmail-stream-type 'starttls
+smtpmail-default-smtp-server "smtp.mail.uni-mannheim.de"
+smtpmail-smtp-server "smtp.mail.uni-mannheim.de"
+smtpmail-smtp-service 587)
 
-  ;; ;; smtp
-  ;; (setq message-send-mail-function 'smtpmail-send-it
-  ;;      smtpmail-stream-type 'starttls
-  ;;      smtpmail-default-smtp-server "smtp.mail.uni-mannheim.de"
-  ;;      smtpmail-smtp-server "smtp.mail.uni-mannheim.de"
-  ;;      smtpmail-smtp-service 587)
+;; about myself
 
-  ;; ;; about myself
+(setq user-mail-address "chung-hong.chan@mzes.uni-mannheim.de"
+mu4e-compose-reply-to-address "chung-hong.chan@mzes.uni-mannheim.de"
+user-full-name "Chung-hong Chan")
 
-  ;; (setq user-mail-address "chung-hong.chan@mzes.uni-mannheim.de"
-  ;;       mu4e-compose-reply-to-address "chung-hong.chan@mzes.uni-mannheim.de"
-  ;;       user-full-name "Chung-hong Chan")
+(setq mu4e-compose-signature
+"Dr. Chung-hong Chan\nFellow\nMannheimer Zentrum für Europäische Sozialforschung (MZES)\nUniversität Mannheim\ntwitter / github: @chainsawriot")
 
-  ;; (setq mu4e-compose-signature
-  ;;    "Dr. Chung-hong Chan\nFellow\nMannheimer Zentrum für Europäische Sozialforschung (MZES)\nUniversität Mannheim\ntwitter / github: @chainsawriot")
+(global-set-key (kbd "C-c 4") 'mu4e)
+;; No confirm
+(setq mu4e-confirm-quit nil)
+;; short cuts
+(setq mu4e-maildir-shortcuts
+  '( ("/unimannheim/inbox" .  ?i)))
 
-  ;; (global-set-key (kbd "C-c 4") 'mu4e)
-  ;; ;; No confirm
-  ;; (setq mu4e-confirm-quit nil)
-  ;; ;; short cuts
-  ;; (setq mu4e-maildir-shortcuts
-  ;;   '( (:maildir "/unimannheim/inbox"     :key  ?i)
-  ;;      (:maildir "/sent"      :key  ?s)))
+;; mu4e-alert
+(use-package mu4e-alert
+:init
+(add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+)
 
-  ;; ;; mu4e-alert
-  ;; (require 'mu4e-alert)
-  ;; (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
 #+END_SRC
+* vterm
 
+#+BEGIN_SRC emacs-lisp
+(use-package vterm)
+#+END_SRC

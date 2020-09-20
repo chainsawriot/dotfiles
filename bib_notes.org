@@ -1,0 +1,7 @@
+
+* Chan, C., & Sältzer, M. (2020): Oolong: create validation tests for automated content analysis
+  :PROPERTIES:
+  :Custom_ID: chan:oolong
+  :END:
+
+I may need to change it to JOSS version (if accepted).

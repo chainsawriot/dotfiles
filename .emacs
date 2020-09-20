@@ -15,19 +15,6 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-(defun refresh-emacs ()
-   (interactive)
-   (org-babel-tangle-file "~/dev/dotfiles/emacs.org")
-   ;;(byte-compile-file "~/dev/dotfiles/emacs")
-   (load-file "~/dev/dotfiles/.emacs")
-)
-(global-set-key (kbd "C-c e") #'refresh-emacs)
-
-(defun pbs ()
-  (interactive)
-  (shell-command-on-region (region-beginning) (region-end) "pbcopy")
-)
-
 (setq inhibit-startup-message t)
 (show-paren-mode 1)
 (global-visual-line-mode t)
@@ -101,7 +88,9 @@
 :init
 (key-chord-mode 1)
 (key-chord-define ess-mode-map ">>" " %>% ")
-(key-chord-define ess-mode-map "__" " -> ")
+(key-chord-define ess-mode-map "++" " -> ")
+(key-chord-define inferior-ess-mode-map ">>" " %>% ")
+(key-chord-define inferior-ess-mode-map "++" " -> ")
 )
 
 (use-package rainbow-delimiters
@@ -130,35 +119,38 @@
 
 ;;(global-set-key (kbd "C-c r") 'inf-ruby)
 
-;; (require 'helm-bibtex)
-;; (autoload 'helm-bibtex "helm-bibtex" "" t)
-;; (setq bibtex-completion-bibliography
-;;       '("~/dev/chcbibtex/bib.bib"))
-;; (setq bibtex-completion-notes-path "~/dev/chcbibtex/notes.org")
-;; (setq bibtex-completion-format-citation-functions
-;;   '((org-mode      . bibtex-completion-format-citation-org-link-to-PDF)
-;;     (latex-mode    . bibtex-completion-format-citation-cite)
-;;     (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
-;;     (default       . bibtex-completion-format-citation-pandoc-citeproc)))
+(use-package helm-bibtex
+:config
+(autoload 'helm-bibtex "helm-bibtex" "" t)
+(setq bibtex-completion-bibliography '("~/dev/dotfiles/bib.bib"))
+(setq bibtex-completion-notes-path "~/dev/dotfiles/bib_notes.org")
+(setq bibtex-completion-cite-prompt-for-optional-arguments nil)
+(setq bibtex-completion-format-citation-functions
+'((org-mode      . bibtex-completion-format-citation-org-link-to-PDF)
+(latex-mode    . bibtex-completion-format-citation-cite)
+(markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
+(default       . bibtex-completion-format-citation-pandoc-citeproc)))
 
-;; ;; make bibtex-completion-insert-citation the default action
+;; make bibtex-completion-insert-citation the default action
 
-;; (helm-delete-action-from-source "Insert citation" helm-source-bibtex)
-;; (helm-add-action-to-source "Insert citation" 'helm-bibtex-insert-citation helm-source-bibtex 0)
+(helm-delete-action-from-source "Insert citation" helm-source-bibtex)
+(helm-add-action-to-source "Insert citation" 'helm-bibtex-insert-citation helm-source-bibtex 0)
+(global-set-key (kbd "C-c x") 'helm-bibtex)
+)
 
-;; (global-set-key (kbd "C-c x") 'helm-bibtex)
-
-;; (setq-default biblio-bibtex-use-autokey t)
-
-;; (setq-default
-;; bibtex-autokey-name-year-separator ":"
-;; bibtex-autokey-year-title-separator ":"
-;; bibtex-autokey-year-length 4
-;; bibtex-autokey-titlewords 3
-;; bibtex-autokey-titleword-length -1 ;; -1 means exactly one
-;; bibtex-autokey-titlewords-stretch 0
-;; bibtex-autokey-titleword-separator ""
-;; bibtex-autokey-titleword-case-convert 'upcase)
+(use-package biblio
+:config
+(setq-default
+biblio-bibtex-use-autokey t
+bibtex-autokey-name-year-separator ":"
+bibtex-autokey-year-title-separator ":"
+bibtex-autokey-year-length 4
+bibtex-autokey-titlewords 3
+bibtex-autokey-titleword-length -1 ;; -1 means exactly one
+bibtex-autokey-titlewords-stretch 0
+bibtex-autokey-titleword-separator ""
+bibtex-autokey-titleword-case-convert 'upcase)
+)
 
 (use-package eval-in-repl
   :bind (
@@ -198,6 +190,9 @@
 ("i" "Idea" entry (file org-default-notes-file)
 "* %? :IDEA: \n%t")
 ))
+
+(use-package org-bullets
+    :hook (org-mode . org-bullets-mode))
 
 (use-package yasnippet
   :init
@@ -243,7 +238,10 @@ mu4e-maildir       "~/maildir"
 mu4e-refile-folder "/Archive"
 mu4e-sent-folder   "/Sent"
 mu4e-drafts-folder "/Drafts"
-mu4e-trash-folder  "/Trash")
+mu4e-trash-folder  "/Trash"
+mu4e-use-fancy-chars t
+message-kill-buffer-on-exit t
+)
 
 ;; check email
 (setq mu4e-get-mail-command  "mbsync -a"
@@ -279,3 +277,21 @@ user-full-name "Chung-hong Chan")
 )
 
 (use-package vterm)
+
+(defun refresh-emacs ()
+   (interactive)
+   (org-babel-tangle-file "~/dev/dotfiles/emacs.org")
+   ;;(byte-compile-file "~/dev/dotfiles/emacs")
+   (load-file "~/dev/dotfiles/.emacs")
+)
+(global-set-key (kbd "C-c e") #'refresh-emacs)
+
+(defun pbs ()
+  (interactive)
+  (shell-command-on-region (region-beginning) (region-end) "pbcopy")
+)
+
+(defun knit ()
+(interactive)
+(shell-command (concat "Rscript -e \"rmarkdown::render('" buffer-file-name "', output_format = 'all')\""))
+)

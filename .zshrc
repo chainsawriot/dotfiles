@@ -84,7 +84,7 @@ fi
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-source ~/myaliases.sh
+source ~/.myaliases.sh
 [ -f ~/.localrc ] && source ~/.localrc
 if [ -d ~/.rbenv ]; then
    export PATH="$HOME/.rbenv/bin:$PATH"

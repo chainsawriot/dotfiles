@@ -1,6 +1,6 @@
 alias e='emacsclient --tty'
 alias dote='e ~/dev/dotfiles/emacs.org'
-## alias emacs='emacs -nw'
+alias emacs='e'
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     alias ls='ls --color=auto -l --block-size=M'
 else

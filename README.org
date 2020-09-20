@@ -9,7 +9,8 @@ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD
 sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/'
 sudo apt-get update
 sudo snap install emacs --classic ## To get the latest version with dynamic module support
-sudo apt-get -y install r-base ess fzf ripgrep xclip kitty zsh git ubuntu-restricted-extra isync mu4e libxml2-dev libssl-dev libcurl4-openssl-dev pandoc ffmpeg libvterm-dev cmake
+sudo apt-get -y install r-base ess fzf ripgrep xclip kitty zsh git ubuntu-restricted-extra isync mu4e libxml2-dev libssl-dev libcurl4-openssl-dev pandoc pandoc-citeproc ffmpeg libvterm-dev cmake ibus-cangjie kitty
+## It is better to log out and login at this point.
 #+END_SRC
 
 Folder structure
@@ -24,4 +25,11 @@ mbsync -a
 mu index --maildir=~/maildir --my-address=chung-hong.chan@mzes.uni-mannheim.de
 #+END_SRC
 
+** tweaks
 
+To make ibus working in kitty, add this to /etc/environment
+ref: [[https://github.com/kovidgoyal/kitty/issues/469]]
+
+#+BEGIN_SRC sh
+GLFW_IM_MODULE=ibus
+#+END_SRC

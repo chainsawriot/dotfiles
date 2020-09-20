@@ -56,29 +56,6 @@ Initialize package mode
 
 #+END_SRC
 
-* Customized functions
-
-Refreshing emacs config.
-
-#+BEGIN_SRC emacs-lisp
-(defun refresh-emacs ()
-   (interactive)
-   (org-babel-tangle-file "~/dev/dotfiles/emacs.org")
-   ;;(byte-compile-file "~/dev/dotfiles/emacs")
-   (load-file "~/dev/dotfiles/.emacs")
-)
-(global-set-key (kbd "C-c e") #'refresh-emacs)
-#+END_SRC
-
-Copy the region to Mac OS X clipboard
-
-#+BEGIN_SRC emacs-lisp
-(defun pbs ()
-  (interactive)
-  (shell-command-on-region (region-beginning) (region-end) "pbcopy")
-)
-#+END_SRC
-
 * General settings
 
 Paren display; visual line mode
@@ -200,7 +177,9 @@ BTW: C-j to confirm. Disabled for using Helm instead.
 :init
 (key-chord-mode 1)
 (key-chord-define ess-mode-map ">>" " %>% ")
-(key-chord-define ess-mode-map "__" " -> ")
+(key-chord-define ess-mode-map "++" " -> ")
+(key-chord-define inferior-ess-mode-map ">>" " %>% ")
+(key-chord-define inferior-ess-mode-map "++" " -> ")
 )
 #+END_SRC
 
@@ -268,41 +247,45 @@ The default action is now citation (mostly in markdown mode).
 To cite multiple item, select each one with C-<SPC> and then press enter.
 
 #+BEGIN_SRC emacs-lisp
-  ;; (require 'helm-bibtex)
-  ;; (autoload 'helm-bibtex "helm-bibtex" "" t)
-  ;; (setq bibtex-completion-bibliography
-  ;;       '("~/dev/chcbibtex/bib.bib"))
-  ;; (setq bibtex-completion-notes-path "~/dev/chcbibtex/notes.org")
-  ;; (setq bibtex-completion-format-citation-functions
-  ;;   '((org-mode      . bibtex-completion-format-citation-org-link-to-PDF)
-  ;;     (latex-mode    . bibtex-completion-format-citation-cite)
-  ;;     (markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
-  ;;     (default       . bibtex-completion-format-citation-pandoc-citeproc)))
+(use-package helm-bibtex
+:config
+(autoload 'helm-bibtex "helm-bibtex" "" t)
+(setq bibtex-completion-bibliography '("~/dev/dotfiles/bib.bib"))
+(setq bibtex-completion-notes-path "~/dev/dotfiles/bib_notes.org")
+(setq bibtex-completion-cite-prompt-for-optional-arguments nil)
+(setq bibtex-completion-format-citation-functions
+'((org-mode      . bibtex-completion-format-citation-org-link-to-PDF)
+(latex-mode    . bibtex-completion-format-citation-cite)
+(markdown-mode . bibtex-completion-format-citation-pandoc-citeproc)
+(default       . bibtex-completion-format-citation-pandoc-citeproc)))
 
-  ;; ;; make bibtex-completion-insert-citation the default action
+;; make bibtex-completion-insert-citation the default action
 
-  ;; (helm-delete-action-from-source "Insert citation" helm-source-bibtex)
-  ;; (helm-add-action-to-source "Insert citation" 'helm-bibtex-insert-citation helm-source-bibtex 0)
-
-  ;; (global-set-key (kbd "C-c x") 'helm-bibtex)
+(helm-delete-action-from-source "Insert citation" helm-source-bibtex)
+(helm-add-action-to-source "Insert citation" 'helm-bibtex-insert-citation helm-source-bibtex 0)
+(global-set-key (kbd "C-c x") 'helm-bibtex)
+)
 
 #+END_SRC
 
 Customized default cite key generation.
 
 #+BEGIN_SRC emacs-lisp
-  ;; (setq-default biblio-bibtex-use-autokey t)
-
-  ;; (setq-default
-  ;; bibtex-autokey-name-year-separator ":"
-  ;; bibtex-autokey-year-title-separator ":"
-  ;; bibtex-autokey-year-length 4
-  ;; bibtex-autokey-titlewords 3
-  ;; bibtex-autokey-titleword-length -1 ;; -1 means exactly one
-  ;; bibtex-autokey-titlewords-stretch 0
-  ;; bibtex-autokey-titleword-separator ""
-  ;; bibtex-autokey-titleword-case-convert 'upcase)
+(use-package biblio
+:config
+(setq-default
+biblio-bibtex-use-autokey t
+bibtex-autokey-name-year-separator ":"
+bibtex-autokey-year-title-separator ":"
+bibtex-autokey-year-length 4
+bibtex-autokey-titlewords 3
+bibtex-autokey-titleword-length -1 ;; -1 means exactly one
+bibtex-autokey-titlewords-stretch 0
+bibtex-autokey-titleword-separator ""
+bibtex-autokey-titleword-case-convert 'upcase)
+)
 #+END_SRC
+
 * ielm
 
 #+BEGIN_SRC emacs-lisp
@@ -354,6 +337,13 @@ Org capture template
 ("i" "Idea" entry (file org-default-notes-file)
 "* %? :IDEA: \n%t")
 ))
+#+END_SRC
+
+Beautiful bullets
+
+#+BEGIN_SRC emacs-lisp
+(use-package org-bullets
+    :hook (org-mode . org-bullets-mode))
 #+END_SRC
 
 * yas
@@ -415,7 +405,10 @@ mu4e-maildir       "~/maildir"
 mu4e-refile-folder "/Archive"
 mu4e-sent-folder   "/Sent"
 mu4e-drafts-folder "/Drafts"
-mu4e-trash-folder  "/Trash")
+mu4e-trash-folder  "/Trash"
+mu4e-use-fancy-chars t
+message-kill-buffer-on-exit t
+)
 
 ;; check email
 (setq mu4e-get-mail-command  "mbsync -a"
@@ -455,4 +448,36 @@ user-full-name "Chung-hong Chan")
 
 #+BEGIN_SRC emacs-lisp
 (use-package vterm)
+#+END_SRC
+* Customized functions
+
+Refreshing emacs config.
+
+#+BEGIN_SRC emacs-lisp
+(defun refresh-emacs ()
+   (interactive)
+   (org-babel-tangle-file "~/dev/dotfiles/emacs.org")
+   ;;(byte-compile-file "~/dev/dotfiles/emacs")
+   (load-file "~/dev/dotfiles/.emacs")
+)
+(global-set-key (kbd "C-c e") #'refresh-emacs)
+#+END_SRC
+
+Copy the region to Mac OS X clipboard
+
+#+BEGIN_SRC emacs-lisp
+(defun pbs ()
+  (interactive)
+  (shell-command-on-region (region-beginning) (region-end) "pbcopy")
+)
+
+#+END_SRC
+
+The weave function provided by ESS is so convoluted. Usually, I just want to do simple thing like this. No bullshit.
+
+#+BEGIN_SRC emacs-lisp
+(defun knit ()
+(interactive)
+(shell-command (concat "Rscript -e \"rmarkdown::render('" buffer-file-name "', output_format = 'all')\""))
+)
 #+END_SRC

@@ -19,3 +19,5 @@ ln -s ~/dev/dotfiles/.Rprofile ~/.Rprofile
 # rm ~/.hyper.js
 # ln -s ~/dev/dotfiles/.hyper.js ~/.hyper.js
 
+[ -f ~/.localrc ] && rm ~/.localrc
+[ -f ~/dev/dotfiles/.localrc ] && ln -s ~/dev/dotfiles/.localrc ~/.localrc

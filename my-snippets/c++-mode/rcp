@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: rcp
+# key: rcp
+# --
+#include <Rcpp.h>
+#include <regex>
+#include <algorithm>
+
+using namespace Rcpp;
+// [[Rcpp::plugins("cpp11")]]
+
+

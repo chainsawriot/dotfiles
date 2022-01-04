@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: sco
+# key: sco
+# --
+std::cout << $0 << std::endl;

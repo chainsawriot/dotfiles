@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: quati
+# key: quati
+# --
+require(tidyverse)
+require(quanteda)
+require(lubridate)
+$0

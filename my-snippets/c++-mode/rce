@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: rce
+# key: rce
+# --
+// [[Rcpp::export]]

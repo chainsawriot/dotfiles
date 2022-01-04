@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: svs
+# key: svs
+# --
+std::vector<std::string> 

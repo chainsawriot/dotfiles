@@ -2,5 +2,4 @@
 # name: import
 # key: rio
 # --
-rio::import("$1")
-$0
+rio::import("$1") %>% tibble::as_tibble()

@@ -75,11 +75,11 @@
 
 (use-package ess
   :bind (
-	 :map ess-mode-map 
+	 :map ess-r-mode-map 
 	 ("_" . 'ess-insert-assign)
 	 ("C-q" . 'ess-eval-region-or-line-and-step)
 	 ("C-c C-k" . 'ess-request-a-process)
-	 :map inferior-ess-mode-map 
+	 :map inferior-ess-r-mode-map 
 	 ("_" . 'ess-insert-assign))
   :config
   (require 'ess-r-mode)
@@ -94,14 +94,23 @@
 (use-package key-chord
   :init
   (key-chord-mode 1)
-  (key-chord-define ess-mode-map ">>" " %>% ")
-  (key-chord-define ess-mode-map "++" " -> ")
-  (key-chord-define inferior-ess-mode-map ">>" " %>% ")
-  (key-chord-define inferior-ess-mode-map "++" " -> ")
+  (key-chord-define ess-r-mode-map ">>" " %>% ")
+  (key-chord-define ess-r-mode-map "++" " -> ")
+  (key-chord-define inferior-ess-r-mode-map ">>" " %>% ")
+  (key-chord-define inferior-ess-r-mode-map "++" " -> ")
   )
 
 (load-file "~/dev/ess_rproj/ess_rproj.el")
 (add-hook 'ess-mode-hook #'ess-rproj)
+
+(defun render-readme ()
+  "A elisp function to quickly render README.Rmd in a package directory"
+  (interactive)
+  (setq-local readmepath (car (directory-files (expand-file-name (plist-get (ess-r-package-info default-directory) :root)) t "README\\.[Rr][Mm][Dd]")))
+  (if (stringp readmepath)
+      (ess-eval-linewise (format "rmarkdown::render('%s', output_format = 'all')" readmepath))
+    (message "No README.RMD found.")))
+(defalias 'rmd #'render-readme)
 
 (use-package rainbow-delimiters
   :init
@@ -422,3 +431,5 @@
 
 (use-package emojify
   :hook (after-init . global-emojify-mode))
+
+(setq shr-color-visible-luminance-min 100)

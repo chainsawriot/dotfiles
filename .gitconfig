@@ -1,7 +1,25 @@
 [user]
 	name = chainsawriot
 	email = chainsawtiney@gmail.com
+	signingkey = B3025BFA6B4872B0
 [core]
 	editor = e
 [url "ssh://git@github.com/"]
 	insteadOf = https://github.com/
+[credential]
+	helper = cache
+[commit]
+	gpgsign = true
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+	interactive = auto
+	ui = true
+	pager = true
+
+[color "diff"]
+         meta = yellow bold
+	 frag = magenta bold
+	 old = red bold
+	 new = green bold

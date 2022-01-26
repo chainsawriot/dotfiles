@@ -23,39 +23,90 @@
 
 ;; Make <F12> set-mark-command
 (global-set-key (kbd "<f12>") 'set-mark-command)
-(global-set-key (kbd "<f9>") 'clipboard-yank)
+;; (global-set-key (kbd "<f9>") 'clipboard-yank)
+(global-set-key (kbd "<S-delete>") 'clipboard-yank)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 (use-package helm
   :bind (("M-x" . helm-M-x)
 	 ("C-x r b" . helm-filtered-bookmarks)
 	 ("C-x C-f" . helm-find-files)
 	 ("M-y" . helm-show-kill-ring)
-	 ("C-x b" . helm-mini))
+	 ("C-x b" . helm-mini)
+	 ("C-x r e" . helm-register))
   :config
   (helm-mode 1))
 
-(set-register ?q '(file . "~/dev/dotfiles/emacs.org"))
+(use-package all-the-icons)
+;; (use-package doom-themes
+;;   :config
+;;   ;; Global settings (defaults)
+;;   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+;;       doom-themes-enable-italic t) ; if nil, italics is universally disabled
+;;   (load-theme 'doom-one t)
+;;   (doom-themes-visual-bell-config)
+;;   )
+(use-package kaolin-themes
+  :config
+  (load-theme 'kaolin-dark t)
+  (kaolin-treemacs-theme))
+
+;; (use-package nord-theme
+;;   :ensure t
+;;   :init (load-theme 'nord))
+;; (use-package ayu-theme
+;;   :config (load-theme 'ayu-grey t))
+
+(set-face-attribute 'default nil :family "Fira Code" :height 140)
+;; (use-package mood-line
+;;   :config
+;;   (mood-line-mode))
+
+;; (use-package fira-code-mode
+;;   :custom (fira-code-mode-disabled-ligatures '("[]" "#{" "#(" "#_" "#_(" "x"))
+;;   (add-hook 'prog-mode-hook 'fira-code-mode)
+;;   (add-hook 'ess-mode-hook 'fira-code-mode)
+;;   )
+
+(when (window-system)
+  (set-frame-font "Fira Code"))
+(let ((alist '((33 . ".\\(?:\\(?:==\\|!!\\)\\|[!=]\\)")
+	       (35 . ".\\(?:###\\|##\\|_(\\|[#(?[_{]\\)")
+	       (36 . ".\\(?:>\\)")
+	       (37 . ".\\(?:\\(?:%%\\)\\|%\\)")
+	       (38 . ".\\(?:\\(?:&&\\)\\|&\\)")
+	       (42 . ".\\(?:\\(?:\\*\\*/\\)\\|\\(?:\\*[*/]\\)\\|[*/>]\\)")
+	       (43 . ".\\(?:\\(?:\\+\\+\\)\\|[+>]\\)")
+	       ;; (45 . ".\\(?:\\(?:-[>-]\\|<<\\|>>\\)\\|[<>}~-]\\)")
+	       ;; (46 . ".\\(?:\\(?:\\.[.<]\\)\\|[.=-]\\)")
+	       (47 . ".\\(?:\\(?:\\*\\*\\|//\\|==\\)\\|[*/=>]\\)")
+	       (48 . ".\\(?:x[a-zA-Z]\\)")
+	       (58 . ".\\(?:::\\|[:=]\\)")
+	       (59 . ".\\(?:;;\\|;\\)")
+	       (60 . ".\\(?:\\(?:!--\\)\\|\\(?:~~\\|->\\|\\$>\\|\\*>\\|\\+>\\|--\\|<[<=-]\\|=[<=>]\\||>\\)\\|[*$+~/<=>|-]\\)")
+	       (61 . ".\\(?:\\(?:/=\\|:=\\|<<\\|=[=>]\\|>>\\)\\|[<=>~]\\)")
+	       (62 . ".\\(?:\\(?:=>\\|>[=>-]\\)\\|[=>-]\\)")
+	       (63 . ".\\(?:\\(\\?\\?\\)\\|[:=?]\\)")
+	       (91 . ".\\(?:]\\)")
+	       (92 . ".\\(?:\\(?:\\\\\\\\\\)\\|\\\\\\)")
+	       (94 . ".\\(?:=\\)")
+	       (119 . ".\\(?:ww\\)")
+	       (123 . ".\\(?:-\\)")
+	       (124 . ".\\(?:\\(?:|[=|]\\)\\|[=>|]\\)")
+	       (126 . ".\\(?:~>\\|~~\\|[>=@~-]\\)")
+	       )
+	     ))
+  (dolist (char-regexp alist)
+    (set-char-table-range composition-function-table (car char-regexp)
+			  `([,(cdr char-regexp) 0 font-shape-gstring]))))
+
+(use-package emojify
+  :hook (after-init . global-emojify-mode))
+
+(set-register ?e '(file . "~/dev/dotfiles/emacs.org"))
 (set-register ?w '(file . "~/dev/braindump/deutsch.org"))
-(set-register ?e '(file . "~/dev/braindump/brain/brain.org"))
+(set-register ?d '(file . "~/dev/braindump/brain/brain.org"))
 (set-register ?b '(file . "~/dev/dotfiles/bib.bib"))
-
-;; (autoload;;  'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
-;; (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
-;; (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-;; (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
-;; (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
-;; (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
-;; (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
-;; (custom-set-variables
-;;  ;; custom-set-variables was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  '(package-selected-packages
-;;    (quote
-;;     (eval-in-repl racket-mode ebib vterm poly-R stan-mode dockerfile-mode docker rg polymode paredit markdown-mode magit inf-ruby flymake-ruby cider))))
-
-;;(setq inferior-lisp-program "clisp")
 
 (setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
       backup-by-copying t    ; Don't delink hardlinks
@@ -65,13 +116,26 @@
       kept-old-versions 5    ; and how many of the old
       )
 
-;; (setq ido-enable-flex-matching t)
-;; (setq ido-everywhere t)
-;; (ido-mode 1)
-
 (use-package rg
   :config
   (rg-enable-default-bindings))
+
+(global-set-key (kbd "C-c m") 'recompile)
+
+;; (defun dired-open-file ()
+;;   "In dired, open the file named on this line."
+;;   (interactive)
+;;   (let* ((file (dired-get-filename nil t)))
+;;     (call-process "xdg-open" nil 0 nil file)))
+;; (define-key dired-mode-map (kbd "C-q") 'dired-open-file)
+
+(use-package vterm
+  :bind (
+	 :map vterm-mode-map
+	 ("C-y" . vterm-yank))
+  )
+
+(use-package yaml-mode)
 
 (use-package ess
   :bind (
@@ -140,8 +204,6 @@
  markdown-mode-keywords
  )
 
-(use-package yaml-mode)
-
 (use-package magit
   :init
   (global-set-key (kbd "C-c g") 'magit-status)
@@ -156,10 +218,6 @@
   ;; (set-face-background 'magit-diff-removed-highlight "gray20")
   ;; (set-face-background 'magit-diff-lines-boundary "blue")
   )
-
-(global-set-key (kbd "C-c m") 'recompile)
-
-;;(global-set-key (kbd "C-c r") 'inf-ruby)
 
 (use-package helm-bibtex
   :config
@@ -333,25 +391,6 @@
   (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
   )
 
-(use-package vterm)
-
-(use-package edit-server
-  :ensure t
-  :commands edit-server-start
-  :init (if after-init-time
-	    (edit-server-start)
-	  (add-hook 'after-init-hook
-		    #'(lambda() (edit-server-start))))
-  :config (setq edit-server-new-frame-alist
-		'((name . "Edit with Emacs FRAME")
-		  (top . 200)
-		  (left . 200)
-		  (width . 80)
-		  (height . 25)
-		  (minibuffer . t)
-		  (menu-bar-lines . t)
-		  (window-system . x))))
-
 (use-package xclip
   :config
   (xclip-mode 1)
@@ -372,32 +411,14 @@
 
 (defun knit ()
   (interactive)
+  (save-buffer)
   (shell-command (concat "Rscript -e \"rmarkdown::render('" buffer-file-name "', output_format = 'all')\""))
-  )
+  (let ((pdf-file-name (concat (file-name-sans-extension buffer-file-name) ".pdf")))
+    (if (file-exists-p pdf-file-name) (call-process "xdg-open" nil 0 nil pdf-file-name)
+      )
+    ))
 
 (global-set-key (kbd "C-c v") (lambda() (interactive) (find-file "~/dev")))
-
-(use-package all-the-icons)
-;; (use-package doom-themes
-;;   :config
-;;   ;; Global settings (defaults)
-;;   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-;;       doom-themes-enable-italic t) ; if nil, italics is universally disabled
-;;   (load-theme 'doom-one t)
-;;   (doom-themes-visual-bell-config)
-;;   )
-(use-package kaolin-themes
-  :config
-  (load-theme 'kaolin-dark t)
-  (kaolin-treemacs-theme))
-
-;; (use-package nord-theme
-;;   :ensure t
-;;   :init (load-theme 'nord))
-;; (use-package ayu-theme
-;;   :config (load-theme 'ayu-grey t))
-
-(set-face-attribute 'default nil :family "Fira Code")
 
 (setq python-shell-interpreter "python3")
 
@@ -405,11 +426,6 @@
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   )
-
-;; (use-package openwith
-;; :config
-;; (openwith-mode t)
-;; (setq openwith-associations '(("\\.pdf\\'" "evince" (file)))))
 
 (use-package dockerfile-mode)
 
@@ -423,13 +439,157 @@
   (setq dashboard-center-content t)
   )
 
-;; (use-package fira-code-mode
-;;   :custom (fira-code-mode-disabled-ligatures '("[]" "#{" "#(" "#_" "#_(" "x"))
-;;   (add-hook 'prog-mode-hook 'fira-code-mode)
-;;   (add-hook 'ess-mode-hook 'fira-code-mode)
+(setq shr-color-visible-luminance-min 100)
+
+(defun open-spotify ()
+  (vterm t)
+  (rename-buffer "spotify" nil)
+  (vterm-send-string "ncspot")
+  (vterm-send-return))
+
+(defun spotify ()
+  (interactive)
+  (if (get-buffer "spotify")
+      (switch-to-buffer "spotify")
+    (open-spotify)))
+
+(defun spotify-play/pause ()
+  (interactive)
+  (if (get-buffer "spotify")
+      (progn (set-buffer "spotify")
+	     (vterm-send-string "P"))))
+
+(use-package elfeed
+  :config
+  (setq elfeed-feeds '(
+		       ("http://feeds.feedburner.com/thisweekinlinuxnew" linux)
+		       ("http://fullcirclemagazine.org/feed/" linux)
+		       ("http://www.raspberrypi.org/feed" linux)
+		       ("http://www.greghendershott.com/feeds/all.rss.xml" emacs)
+		       ("http://www.chainsawriot.com/feed.xml" blog)
+		       ("http://mysterophilia.blogspot.com/feeds/posts/default" blog)
+		       ("http://tiney.com/?feed=rss2" blog)
+		       ("http://blog.liyiwei.org/?feed=rss2" research)
+		       ;;("http://gabefung.wordpress.com/feed/" blog)
+		       ("https://qbgabe12.wordpress.com/feed/" blog)
+		       ("http://feeds.feedburner.com/JackysBlog" blog)
+		       ("http://yccmcb.blogspot.com/feeds/posts/default" blog)
+		       ("http://www.jstatsoft.org/rss" journal)
+		       ("http://kbotjammer.blogspot.hk/feeds/posts/default" blog)
+		       ("https://www.tagesschau.de/xml/rss2/" news)
+		       ("https://www.tandfonline.com/feed/rss/hcms20" journal)
+		       ("https://computationalcommunication.org/ccr/gateway/plugin/WebFeedGatewayPlugin/atom" journal)
+		       ("https://ijoc.org/index.php/ijoc/gateway/plugin/WebFeedGatewayPlugin/atom" journal)
+		       ("https://journals.sagepub.com/action/showFeed?ui=0&mi=ehikzz&ai=2b4&jc=hijb&type=axatoc&feed=rss" journal)
+		       ("https://www.tandfonline.com/feed/rss/upcp20" journal)
+		       ))
+  )
+
+;; ("http://chowching.wordpress.com/feed/" blog)
+;; ("http://uingusu.blogspot.hk/feeds/posts/default" blog)
+;; ("http://joechungvschina.blogspot.com/feeds/posts/default" blog)
+
+;;"http://feeds.feedburner.com/hkscience"
+;;"http://rayneyuenblog.wordpress.com/feed/"
+
+;; "http://feeds.feedburner.com/cosine-inn"
+;; "http://fishandhappiness.blogspot.com/feeds/posts/default"
+;; "http://feeds.feedburner.com/naitik"
+;; "http://emacs-fu.blogspot.com/feeds/posts/default?alt=rss"
+;;"http://latexforhumans.wordpress.com/feed/"
+;; "http://simplystatistics.org/feed/"
+
+;; "http://feeds.feedburner.com/RBloggers"
+;; "http://pragmaticemacs.com/feed/"
+;; "http://www.stat.columbia.edu/~cook/movabletype/mlm/atom.xml"
+;;"http://api.flickr.com/services/feeds/photos_public.gne?id=46738700@N00&format=atom"
+;; "http://www.google.com/alerts/feeds/02150599014854607054/4889200315958358584"
+;;"http://laosaomaster.com/laosao/
+
+;;"http://laosaomaster.studium-sinicum.com/?feed=rss2"
+;;"http://blog.age.com.hk/feed/"
+;;"http://tungpakfool.wordpress.com/feed/"
+;;"http://qb280.tumblr.com/rss"
+;; ("http://linerak.wordpress.com/feed/" blog)
+;;"http://laosaomaster.com/laosaomaster/?feed=rss2"
+;;"http://feeds.feedburner.com/hoiking"
+;;"http://pcheung25.wordpress.com/feed/"
+;;"http://fongpik.wordpress.com/feed/"
+;;"http://hk.myblog.yahoo.com/isle-wong/rss"
+;;"http://comebacktolove.blogspot.com/feeds/posts/default"
+;; "http://aukalun.blogspot.com/feeds/posts/default"
+;; "http://bigantclimbing.blogspot.com/feeds/posts/default"
+;; "http://feeds.feedburner.com/libertines/qHZz"
+;; "http://feeds.feedburner.com/darkman"
+;; "http://milkteamonster.blogspot.com/feeds/posts/default"
+;; "http://feeds.feedburner.com/Room2046"
+;; "http://feeds.feedburner.com/chiunam"
+;; "http://aloneinthefart.blogspot.com/feeds/posts/default"
+;; "http://badtastesmellgood.blogspot.com/feeds/posts/default"
+;; "http://laosao.wordpress.com/feed/"
+;; "http://point.south.hk/feed/"
+;; "http://landofnocheese.blogspot.com/feeds/posts/default"
+;; "http://feeds.feedburner.com/mildbutcalmless"
+;; "http://stone.age.com.hk/feed"
+;; "http://kaichileung.blogspot.com/feeds/posts/default"
+;; "http://hongkonghell.blogspot.com/atom.xml"
+
+;; (use-package elfeed-goodies
+;;   :init
+;;   (elfeed-goodies/setup)
+;;   :config
+;;   (setq elfeed-goodies/entry-pane-size 0.6)
 ;;   )
 
-(use-package emojify
-  :hook (after-init . global-emojify-mode))
+;; (autoload;;  'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+;; (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+;; (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+;; (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
+;; (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+;; (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+;; (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+;; (custom-set-variables
+;;  ;; custom-set-variables was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;;  '(package-selected-packages
+;;    (quote
+;;     (eval-in-repl racket-mode ebib vterm poly-R stan-mode dockerfile-mode docker rg polymode paredit markdown-mode magit inf-ruby flymake-ruby cider))))
 
-(setq shr-color-visible-luminance-min 100)
+;; (setq ido-enable-flex-matching t)
+;; (setq ido-everywhere t)
+;; (ido-mode 1)
+
+;;(setq inferior-lisp-program "clisp")
+
+;; (use-package edit-server
+;;   :ensure t
+;;   :commands edit-server-start
+;;   :init (if after-init-time
+;; 	    (edit-server-start)
+;; 	  (add-hook 'after-init-hook
+;; 		    #'(lambda() (edit-server-start))))
+;;   :config (setq edit-server-new-frame-alist
+;; 		'((name . "Edit with Emacs FRAME")
+;; 		  (top . 200)
+;; 		  (left . 200)
+;; 		  (width . 80)
+;; 		  (height . 25)
+;; 		  (minibuffer . t)
+;; 		  (menu-bar-lines . t)
+;; 		  (window-system . x))))
+
+;; (use-package sudo-edit)
+
+;; (use-package disable-mouse
+;;   :config
+;;   (global-disable-mouse-mode)
+;;   )
+
+;;(global-set-key (kbd "C-c r") 'inf-ruby)
+
+;; (use-package openwith
+;; :config
+;; (openwith-mode t)
+;; (setq openwith-associations '(("\\.pdf\\'" "evince" (file)))))

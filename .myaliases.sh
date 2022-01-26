@@ -1,5 +1,5 @@
-alias e='emacsclient --tty'
-# alias e='emacsclient --c &'
+# alias e='emacsclient --tty'
+alias e='emacsclient --c &'
 alias dote='e ~/dev/dotfiles/emacs.org'
 alias emacs='e'
 if [[ "$OSTYPE" == "linux-gnu" ]]; then

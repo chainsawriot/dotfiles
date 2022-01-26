@@ -18,3 +18,7 @@ fuck <- function() {
 pwd <- function() {
     getwd()
 }
+
+cd <- function(where = here::here()) {
+    setwd(where)
+}

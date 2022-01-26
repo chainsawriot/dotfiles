@@ -19,5 +19,9 @@ ln -s ~/dev/dotfiles/.Rprofile ~/.Rprofile
 # rm ~/.hyper.js
 # ln -s ~/dev/dotfiles/.hyper.js ~/.hyper.js
 
+rm ~/.stumpwm
+ln -s ~/dev/dotfiles/stumpwm.lisp ~/.stumpwm
+
 [ -f ~/.localrc ] && rm ~/.localrc
 [ -f ~/dev/dotfiles/.localrc ] && ln -s ~/dev/dotfiles/.localrc ~/.localrc
+

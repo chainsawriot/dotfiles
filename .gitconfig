@@ -3,7 +3,7 @@
 	email = chainsawtiney@gmail.com
 	signingkey = B3025BFA6B4872B0
 [core]
-	editor = e
+	editor = emacsclient --tty
 [url "ssh://git@github.com/"]
 	insteadOf = https://github.com/
 [credential]

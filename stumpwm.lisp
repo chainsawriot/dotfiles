@@ -27,4 +27,16 @@
   "Start emacs unless it is already running, in which case focus it."
   (run-or-raise "emacsclient -c" '(:class "Emacs")))
 
-(mode-line)
+(setf stumpwm:*screen-mode-line-format*
+      (list "%w | "
+            '(:eval (stumpwm:run-shell-command "date" t))))
+
+(stumpwm:toggle-mode-line (stumpwm:current-screen)
+ (stumpwm:current-head))
+(if (not (head-mode-line (current-head)))
+    (toggle-mode-line (current-screen) (current-head)))
+
+;; input-window
+
+(setf *input-window-gravity* :center)
+(setf *message-window-gravity* :center)

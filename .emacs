@@ -134,6 +134,7 @@
 	 :map vterm-mode-map
 	 ("C-y" . vterm-yank))
   )
+(global-set-key (kbd "C-c v") 'vterm)
 
 (use-package yaml-mode)
 
@@ -333,13 +334,8 @@
 
 (setq-default c-basic-offset 4)
 
-;; Mac
-;;(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
-;; Linux
-(add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
-
+(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")
 (require 'mu4e)
-
 (setq
  mue4e-headers-skip-duplicates  t
  mu4e-view-show-images t
@@ -360,7 +356,7 @@
 
 ;; check email
 (setq mu4e-get-mail-command  "mbsync -a"
-      mu4e-update-interval 900)
+      mu4e-update-interval 2400)
 
 ;; smtp
 (setq message-send-mail-function 'smtpmail-send-it
@@ -385,7 +381,7 @@
 (setq mu4e-maildir-shortcuts
       '( ("/unimannheim/inbox" .  ?i)))
 
-;; mu4e-alert
+;;	mu4e-alert
 (use-package mu4e-alert
   :init
   (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
@@ -418,7 +414,7 @@
       )
     ))
 
-(global-set-key (kbd "C-c v") (lambda() (interactive) (find-file "~/dev")))
+(global-set-key (kbd "C-c t") (lambda() (interactive) (find-file "~/dev")))
 
 (setq python-shell-interpreter "python3")
 
@@ -484,7 +480,6 @@
 		       ("https://www.tandfonline.com/feed/rss/upcp20" journal)
 		       ))
   )
-
 ;; ("http://chowching.wordpress.com/feed/" blog)
 ;; ("http://uingusu.blogspot.hk/feeds/posts/default" blog)
 ;; ("http://joechungvschina.blogspot.com/feeds/posts/default" blog)
@@ -561,7 +556,10 @@
 ;; (setq ido-everywhere t)
 ;; (ido-mode 1)
 
-;;(setq inferior-lisp-program "clisp")
+(use-package slime
+  :config
+  (setq inferior-lisp-program "sbcl")
+  )
 
 ;; (use-package edit-server
 ;;   :ensure t

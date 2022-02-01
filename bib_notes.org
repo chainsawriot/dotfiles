@@ -5,3 +5,10 @@
   :END:
 
 I may need to change it to JOSS version (if accepted).
+
+* Wickham, H. (2011): The split-apply-combine strategy for data analysis
+  :PROPERTIES:
+  :Custom_ID: wickham2011
+  :END:
+
+This is an article about the so-called SAC strategy.

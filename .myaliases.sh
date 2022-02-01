@@ -35,6 +35,7 @@ alias tmn='tmux new -s '
 alias g++-6='g++'
 alias killemacs="emacsclient -e '(kill-emacs)'"
 alias bfg="java -jar ~/tools/bfg-1.13.0.jar"
+alias x="xdg-open"
 
 function rpkg() {
     rr "usethis::create_package(\"`pwd`\")"

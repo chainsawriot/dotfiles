@@ -24,3 +24,12 @@ ln -s ~/dev/dotfiles/stumpwm.lisp ~/.stumpwmrc
 
 [ -f ~/.localrc ] && rm ~/.localrc
 [ -f ~/dev/dotfiles/.localrc ] && ln -s ~/dev/dotfiles/.localrc ~/.localrc
+
+[ -f ~/.cargo/config ] && rm ~/.cargo/config
+ln -s ~/dev/dotfiles/cargo ~/.cargo/config
+
+[ -f ~/.config/bat/config ] && rm ~/.config/bat/config
+ln -s ~/dev/dotfiles/bat.config ~/.config/bat/config
+
+
+

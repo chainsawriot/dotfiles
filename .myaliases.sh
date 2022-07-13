@@ -66,7 +66,7 @@ function rt1() {
 }
 
 function make_mzes() {
-    rr "dir.create('$1') ; rmarkdown::draft('$1/index.rmd', template = 'mzesalike', package = 'mzesalike', edit = FALSE)"
+    rr "dir.create('$1') ; rmarkdown::draft('$1/skeleton.rmd', template = 'mzesalike', package = 'mzesalike', edit = FALSE)"
 }
 
 function papaja() {

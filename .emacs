@@ -1,19 +1,21 @@
 (require 'package) ;; You might already have this line
-(add-to-list 'package-archives
-	     '("melpa" . "https://melpa.org/packages/"))
-(when (< emacs-major-version 24)
-  ;; For important compatibility libraries like cl-lib
-  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
-(package-initialize) ;; You might already have this line
+  (add-to-list 'package-archives
+	       '("melpa" . "https://melpa.org/packages/"))
+  (when (< emacs-major-version 24)
+    ;; For important compatibility libraries like cl-lib
+    (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+  (package-initialize) ;; You might already have this line
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
 
-(require 'use-package)
-(setq use-package-always-ensure t)
+  (require 'use-package)
+  (setq use-package-always-ensure t)
+;;(global-set-key (kbd "C-c v") 'ansi-term)
 
 (setq inhibit-startup-message t)
+(setq master-font-family "Fira Code")
 (show-paren-mode 1)
 (global-visual-line-mode t)
 (tool-bar-mode 0)
@@ -26,6 +28,13 @@
 ;; (global-set-key (kbd "<f9>") 'clipboard-yank)
 (global-set-key (kbd "<S-delete>") 'clipboard-yank)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
+(global-set-key (kbd "M-i") 'ispell-word)
+;; Change this from 10MB to 100MB
+(setq large-file-warning-threshold 100000000)
+(defun dired-dev ()
+    (interactive)
+  (dired "~/dev"))
+(global-set-key (kbd "C-c w") 'dired-dev)
 
 (use-package helm
   :bind (("M-x" . helm-M-x)
@@ -57,7 +66,7 @@
 ;; (use-package ayu-theme
 ;;   :config (load-theme 'ayu-grey t))
 
-(set-face-attribute 'default nil :family "Fira Code" :height 140)
+(set-face-attribute 'default nil :family master-font-family :height 140)
 ;; (use-package mood-line
 ;;   :config
 ;;   (mood-line-mode))
@@ -69,7 +78,7 @@
 ;;   )
 
 (when (window-system)
-  (set-frame-font "Fira Code"))
+  (set-frame-font master-font-family))
 (let ((alist '((33 . ".\\(?:\\(?:==\\|!!\\)\\|[!=]\\)")
 	       (35 . ".\\(?:###\\|##\\|_(\\|[#(?[_{]\\)")
 	       (36 . ".\\(?:>\\)")
@@ -100,9 +109,6 @@
     (set-char-table-range composition-function-table (car char-regexp)
 			  `([,(cdr char-regexp) 0 font-shape-gstring]))))
 
-(use-package emojify
-  :hook (after-init . global-emojify-mode))
-
 (set-register ?e '(file . "~/dev/dotfiles/emacs.org"))
 (set-register ?w '(file . "~/dev/braindump/deutsch.org"))
 (set-register ?d '(file . "~/dev/braindump/brain/brain.org"))
@@ -129,14 +135,13 @@
 ;;     (call-process "xdg-open" nil 0 nil file)))
 ;; (define-key dired-mode-map (kbd "C-q") 'dired-open-file)
 
-(use-package vterm
-  :bind (
-	 :map vterm-mode-map
-	 ("C-y" . vterm-yank))
-  )
-(global-set-key (kbd "C-c v") 'vterm)
-
 (use-package yaml-mode)
+
+(use-package exec-path-from-shell
+  :init
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
+  )
 
 (use-package ess
   :bind (
@@ -261,6 +266,16 @@
 	org-ref-default-bibliography "~/dev/dotfiles/bib.bib")
   )
 
+(defun ins-doi ()
+    (interactive)
+    (progn
+      (setq doi-to-query (read-string "DOI "))
+      (find-file "~/dev/dotfiles/bib.bib")
+      (end-of-buffer)
+      (doi-insert-bibtex doi-to-query)
+      )
+    )
+
 (use-package eval-in-repl
   :bind (
 	 :map emacs-lisp-mode-map
@@ -277,6 +292,7 @@
 
 (setq org-log-done 'time)
 (setq org-support-shift-select 'always)
+(setq org-confirm-babel-evaluate nil)
 
 (require 'ox-md)
 
@@ -285,10 +301,12 @@
  'org-babel-load-languages
  '((emacs-lisp . t)
    (lisp . t)
-   (C . t)))
+   (C . t)
+   (R . t)))
 
 (setq org-default-notes-file "~/dev/braindump/brain/brain.org")
 (setq org-agenda-files '("~/dev/braindump/brain/brain.org"))
+(setq micro-journal-file "~/dev/braindump/brain/micro.org")
 (global-set-key (kbd "C-c c") 'org-capture)
 (global-set-key (kbd "C-c a") 'org-agenda)
 
@@ -296,8 +314,8 @@
       '(("t" "todo" entry (file org-default-notes-file)
 	 "* TODO %?\n%u\n%a\n")
 	("m" "Meeting" entry (file org-default-notes-file)
-	 "* MEETING with %? :MEETING:\n%t")
-	("i" "Idea" entry (file org-default-notes-file)
+	 "* MEETING with %? :MEETING:\n %t")
+	("i" "Idea" entry (file micro-journal-file)
 	 "* %? :IDEA: \n%t")
 	))
 
@@ -408,11 +426,7 @@
 (defun knit ()
   (interactive)
   (save-buffer)
-  (shell-command (concat "Rscript -e \"rmarkdown::render('" buffer-file-name "', output_format = 'all')\""))
-  (let ((pdf-file-name (concat (file-name-sans-extension buffer-file-name) ".pdf")))
-    (if (file-exists-p pdf-file-name) (call-process "xdg-open" nil 0 nil pdf-file-name)
-      )
-    ))
+  (async-shell-command (concat "Rscript -e \"rmarkdown::render('" buffer-file-name "', output_format = 'all')\"")))
 
 (global-set-key (kbd "C-c t") (lambda() (interactive) (find-file "~/dev")))
 
@@ -429,31 +443,17 @@
   :ensure t
   :config
   (dashboard-setup-startup-hook)
+  ;; (setq dashboard-match-agenda-entry
+  ;;   "TODO=\"TODO\"|TODO=\"MEETING\"")
   (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
   (setq dashboard-items '((recents  . 5)
-			  (registers . 5)))
-  (setq dashboard-center-content t)
+			  (registers . 5)
+			  (agenda . 5)))
+  (setq dashboard-week-agenda t)
+  (setq dashboard-filter-agenda-entry "MEETING|TODO")
   )
 
 (setq shr-color-visible-luminance-min 100)
-
-(defun open-spotify ()
-  (vterm t)
-  (rename-buffer "spotify" nil)
-  (vterm-send-string "ncspot")
-  (vterm-send-return))
-
-(defun spotify ()
-  (interactive)
-  (if (get-buffer "spotify")
-      (switch-to-buffer "spotify")
-    (open-spotify)))
-
-(defun spotify-play/pause ()
-  (interactive)
-  (if (get-buffer "spotify")
-      (progn (set-buffer "spotify")
-	     (vterm-send-string "P"))))
 
 (use-package elfeed
   :config
@@ -478,6 +478,9 @@
 		       ("https://ijoc.org/index.php/ijoc/gateway/plugin/WebFeedGatewayPlugin/atom" journal)
 		       ("https://journals.sagepub.com/action/showFeed?ui=0&mi=ehikzz&ai=2b4&jc=hijb&type=axatoc&feed=rss" journal)
 		       ("https://www.tandfonline.com/feed/rss/upcp20" journal)
+		       ("https://journals.sagepub.com/action/showFeed?ui=0&mi=ehikzz&ai=2b4&jc=crxa&type=axatoc&feed=rss" journal)
+		       ("https://bymiachang.com/feed/" blog)
+		       ("https://martin.leyrer.priv.at/index.completerss20" blog)
 		       ))
   )
 ;; ("http://chowching.wordpress.com/feed/" blog)
@@ -529,6 +532,85 @@
 ;; "http://kaichileung.blogspot.com/feeds/posts/default"
 ;; "http://hongkonghell.blogspot.com/atom.xml"
 
+(use-package slime
+  :config
+  (setq inferior-lisp-program "sbcl")
+  )
+
+;; (add-to-list 'load-path "/home/chainsawriot/dev/elisp/arduino-mode")
+;; (setq auto-mode-alist (cons '("\\.\\(pde\\|ino\\)$" . ) auto-mode-alist))
+(add-to-list 'auto-mode-alist '("\\.ino\\'" . c++-mode))
+;; (autoload 'arduino-mode "arduino-mode" "Arduino editing mode." t)
+
+(defun eir-eval-in-indium ()
+  "Reinventing"
+  (interactive)
+    (if (and transient-mark-mode mark-active)
+	(indium-eval-region (point) (mark))
+      (beginning-of-line)
+      (set-mark (point))
+      (end-of-line)
+      (if (not (equal (point) (mark)))
+	(indium-eval-region (point) (mark))
+      ;; If empty, deselect region
+      (setq mark-active nil))
+      (eir-next-code-line)
+      (setq mark-active nil)
+  ))
+
+      (use-package indium
+	;; :bind (
+	;; 	 :map javascript-mode-map
+	;; 	("C-c C-r" . 'indium-eval-region))
+	;; :config
+	;; (add-hook 'js-mode-hook #'indium-interaction-mode)
+	)
+
+	(use-package js2-mode
+	  :bind (
+:map js2-mode-map
+     ("C-c C-r" . 'indium-eval-region)
+     ("C-q" . eir-eval-in-indium)
+		 )
+	:config
+	(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
+
+;; Manual install
+  (use-package vterm
+    :load-path "/home/chainsawriot/dev/emacs-libvterm"
+    :bind (
+	   :map vterm-mode-map
+	   ("C-y" . vterm-yank))
+    )
+  (global-set-key (kbd "C-c v") 'vterm)
+
+(defun my-nov-font-setup ()
+(face-remap-add-relative 'variable-pitch :family "Liberation Serif"
+					 :height 1.5))
+(use-package nov
+  :config
+  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+  (add-hook 'nov-mode-hook 'my-nov-font-setup)
+  )
+
+(use-package rust-mode
+      :config
+      (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+)
+
+(use-package tide)
+
+(use-package ts-comint
+  :config
+  (setq ts-comint-program-command "/home/chainsawriot/dev/fodira/twitter/node_modules/.bin/ts-node")
+  (add-hook 'typescript-mode-hook
+      (lambda ()
+	(local-set-key (kbd "C-x C-e") 'ts-send-last-sexp)
+	(local-set-key (kbd "C-M-x") 'ts-send-last-sexp-and-go)
+	(local-set-key (kbd "C-c C-r") 'ts-send-region)
+	(local-set-key (kbd "C-c C-b") 'ts-send-buffer-and-go)
+	(local-set-key (kbd "C-c l") 'ts-load-file-and-go))))
+
 ;; (use-package elfeed-goodies
 ;;   :init
 ;;   (elfeed-goodies/setup)
@@ -555,11 +637,6 @@
 ;; (setq ido-enable-flex-matching t)
 ;; (setq ido-everywhere t)
 ;; (ido-mode 1)
-
-(use-package slime
-  :config
-  (setq inferior-lisp-program "sbcl")
-  )
 
 ;; (use-package edit-server
 ;;   :ensure t
@@ -591,3 +668,29 @@
 ;; :config
 ;; (openwith-mode t)
 ;; (setq openwith-associations '(("\\.pdf\\'" "evince" (file)))))
+
+;; (add-to-list 'load-path "/home/chainsawriot/dev/sunrise-commander")
+;; (require 'sunrise)
+;; (require 'sunrise-buttons)
+;; (require 'sunrise-modeline)
+
+;; (defun open-spotify ()
+;;   (vterm t)
+;;   (rename-buffer "spotify" nil)
+;;   (vterm-send-string "ncspot")
+;;   (vterm-send-return))
+
+;; (defun spotify ()
+;;   (interactive)
+;;   (if (get-buffer "spotify")
+;;       (switch-to-buffer "spotify")
+;;     (open-spotify)))
+
+;; (defun spotify-play/pause ()
+;;   (interactive)
+;;   (if (get-buffer "spotify")
+;;       (progn (set-buffer "spotify")
+;; 	     (vterm-send-string "P"))))
+
+;; (use-package emojify
+;;   :hook (after-init . global-emojify-mode))

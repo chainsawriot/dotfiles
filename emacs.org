@@ -16,18 +16,17 @@ The principles
 4. Use =C-c= plus a single character for frequently used commands. Put it in the LHS of the keyboard if possible. Most of the =C-c= combinations are not used. For example, helm-bibtex is =C-c x=.
 
 #+caption: Keys
-| Keyboard | command        |
-|----------+----------------|
-| =C-c x=  | helm-bibtex    |
-| =C-c d=  | deft           |
-| =C-c m=  | recompile      |
-| =C-c g=  | magit          |
-| =C-c e=  | refresh emacs  |
-| =C-c c=  | org capture    |
-| =C-c a=  | org agenda     |
-| =C-c 4=  | mu4e           |
-| =C-c t=  | vterm          |
-| =C-c v=  | Dired my ~/dev |
+| Keyboard | command       |
+|----------+---------------|
+| =C-c x=  | helm-bibtex   |
+| =C-c d=  | deft          |
+| =C-c m=  | recompile     |
+| =C-c g=  | magit         |
+| =C-c e=  | refresh emacs |
+| =C-c c=  | org capture   |
+| =C-c a=  | org agenda    |
+| =C-c 4=  | mu4e          |
+| =C-c v=  | vterm         |
 
 * Generality and theming
   
@@ -50,7 +49,7 @@ Initialize package mode
 
   (require 'use-package)
   (setq use-package-always-ensure t)
-
+;;(global-set-key (kbd "C-c v") 'ansi-term)
 #+END_SRC
 
 ** General settings
@@ -59,6 +58,7 @@ Paren display; visual line mode
 
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-message t)
+  (setq master-font-family "Fira Code")
   (show-paren-mode 1)
   (global-visual-line-mode t)
   (tool-bar-mode 0)
@@ -71,9 +71,18 @@ Paren display; visual line mode
   ;; (global-set-key (kbd "<f9>") 'clipboard-yank)
   (global-set-key (kbd "<S-delete>") 'clipboard-yank)
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
+  (global-set-key (kbd "M-i") 'ispell-word)
+  ;; Change this from 10MB to 100MB
+  (setq large-file-warning-threshold 100000000)
+  (defun dired-dev ()
+      (interactive)
+    (dired "~/dev"))
+  (global-set-key (kbd "C-c w") 'dired-dev)
 #+END_SRC
 
 ** helm
+
+The bookmark-set is actually "C-x r m"
 
 #+BEGIN_SRC emacs-lisp
   (use-package helm
@@ -109,7 +118,7 @@ Paren display; visual line mode
   ;; (use-package ayu-theme
   ;;   :config (load-theme 'ayu-grey t))
 
-  (set-face-attribute 'default nil :family "Fira Code" :height 140)
+  (set-face-attribute 'default nil :family master-font-family :height 140)
   ;; (use-package mood-line
   ;;   :config
   ;;   (mood-line-mode))
@@ -125,7 +134,7 @@ Paren display; visual line mode
   ;;   )
 
   (when (window-system)
-    (set-frame-font "Fira Code"))
+    (set-frame-font master-font-family))
   (let ((alist '((33 . ".\\(?:\\(?:==\\|!!\\)\\|[!=]\\)")
 		 (35 . ".\\(?:###\\|##\\|_(\\|[#(?[_{]\\)")
 		 (36 . ".\\(?:>\\)")
@@ -156,14 +165,6 @@ Paren display; visual line mode
       (set-char-table-range composition-function-table (car char-regexp)
 			    `([,(cdr char-regexp) 0 font-shape-gstring]))))
 #+END_SRC
-
-** Emoji
-
-#+BEGIN_SRC emacs-lisp
-  (use-package emojify
-    :hook (after-init . global-emojify-mode))
-#+END_SRC
-
   
 * Sys
 ** File Registers
@@ -210,23 +211,23 @@ Paren display; visual line mode
   ;;     (call-process "xdg-open" nil 0 nil file)))
   ;; (define-key dired-mode-map (kbd "C-q") 'dired-open-file)
 #+END_SRC
-** vterm
-
-#+BEGIN_SRC emacs-lisp
-  (use-package vterm
-    :bind (
-	   :map vterm-mode-map
-	   ("C-y" . vterm-yank))
-    )
-  (global-set-key (kbd "C-c v") 'vterm)
-
-#+END_SRC
 
 ** yaml
 
 #+BEGIN_SRC emacs-lisp
   (use-package yaml-mode)
 #+END_SRC
+
+** exec-path-from-shell
+
+#+BEGIN_SRC emacs-lisp
+  (use-package exec-path-from-shell
+    :init
+    (when (memq window-system '(mac ns x))
+      (exec-path-from-shell-initialize))
+    )
+#+END_SRC
+
 
 * R
 ** Emacs Speaks Statistics (ESS)
@@ -395,6 +396,21 @@ Customized default cite key generation.
     )
 #+END_SRC
 
+Insert doi into bib.bib
+
+#+BEGIN_SRC emacs-lisp
+(defun ins-doi ()
+    (interactive)
+    (progn
+      (setq doi-to-query (read-string "DOI "))
+      (find-file "~/dev/dotfiles/bib.bib")
+      (end-of-buffer)
+      (doi-insert-bibtex doi-to-query)
+      )
+    )
+
+#+END_SRC
+
 
 * ielm
 
@@ -417,22 +433,25 @@ Customized default cite key generation.
 * org
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-log-done 'time)
-  (setq org-support-shift-select 'always)
+    (setq org-log-done 'time)
+    (setq org-support-shift-select 'always)
+    (setq org-confirm-babel-evaluate nil)
 
-  (require 'ox-md)
+    (require 'ox-md)
 
 
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t)
-     (lisp . t)
-     (C . t)))
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((emacs-lisp . t)
+       (lisp . t)
+       (C . t)
+       (R . t)))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
   (setq org-default-notes-file "~/dev/braindump/brain/brain.org")
   (setq org-agenda-files '("~/dev/braindump/brain/brain.org"))
+  (setq micro-journal-file "~/dev/braindump/brain/micro.org")
   (global-set-key (kbd "C-c c") 'org-capture)
   (global-set-key (kbd "C-c a") 'org-agenda) 
 #+END_SRC
@@ -444,8 +463,8 @@ Org capture template
 	'(("t" "todo" entry (file org-default-notes-file)
 	   "* TODO %?\n%u\n%a\n")
 	  ("m" "Meeting" entry (file org-default-notes-file)
-	   "* MEETING with %? :MEETING:\n%t")
-	  ("i" "Idea" entry (file org-default-notes-file)
+	   "* MEETING with %? :MEETING:\n %t")
+	  ("i" "Idea" entry (file micro-journal-file)
 	   "* %? :IDEA: \n%t")
 	  ))
 #+END_SRC
@@ -603,11 +622,7 @@ The weave function provided by ESS is so convoluted. Usually, I just want to do 
   (defun knit ()
     (interactive)
     (save-buffer)
-    (shell-command (concat "Rscript -e \"rmarkdown::render('" buffer-file-name "', output_format = 'all')\""))
-    (let ((pdf-file-name (concat (file-name-sans-extension buffer-file-name) ".pdf")))
-      (if (file-exists-p pdf-file-name) (call-process "xdg-open" nil 0 nil pdf-file-name)
-	)
-      ))
+    (async-shell-command (concat "Rscript -e \"rmarkdown::render('" buffer-file-name "', output_format = 'all')\"")))
 #+END_SRC
 
 Quickly jump to my dev directory, no BS
@@ -648,10 +663,14 @@ Quickly jump to my dev directory, no BS
     :ensure t
     :config
     (dashboard-setup-startup-hook)
+    ;; (setq dashboard-match-agenda-entry
+    ;;   "TODO=\"TODO\"|TODO=\"MEETING\"")
     (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
     (setq dashboard-items '((recents  . 5)
-			    (registers . 5)))
-    (setq dashboard-center-content t)
+			    (registers . 5)
+			    (agenda . 5)))
+    (setq dashboard-week-agenda t)
+    (setq dashboard-filter-agenda-entry "MEETING|TODO")
     )
 #+END_SRC
 
@@ -659,30 +678,6 @@ Quickly jump to my dev directory, no BS
 
 #+BEGIN_SRC emacs-lisp
   (setq shr-color-visible-luminance-min 100)
-#+END_SRC
-
-
-
-* Spotify / ncspot
-
-#+BEGIN_SRC emacs-lisp
-  (defun open-spotify ()
-    (vterm t)
-    (rename-buffer "spotify" nil)
-    (vterm-send-string "ncspot")
-    (vterm-send-return))
-
-  (defun spotify ()
-    (interactive)
-    (if (get-buffer "spotify")
-	(switch-to-buffer "spotify")
-      (open-spotify)))
-
-  (defun spotify-play/pause ()
-    (interactive)
-    (if (get-buffer "spotify")
-	(progn (set-buffer "spotify")
-	       (vterm-send-string "P"))))
 #+END_SRC
 
 * Elfeed
@@ -711,6 +706,9 @@ Quickly jump to my dev directory, no BS
 			 ("https://ijoc.org/index.php/ijoc/gateway/plugin/WebFeedGatewayPlugin/atom" journal)
 			 ("https://journals.sagepub.com/action/showFeed?ui=0&mi=ehikzz&ai=2b4&jc=hijb&type=axatoc&feed=rss" journal)
 			 ("https://www.tandfonline.com/feed/rss/upcp20" journal)
+			 ("https://journals.sagepub.com/action/showFeed?ui=0&mi=ehikzz&ai=2b4&jc=crxa&type=axatoc&feed=rss" journal)
+			 ("https://bymiachang.com/feed/" blog)
+			 ("https://martin.leyrer.priv.at/index.completerss20" blog)
 			 ))
     )
   ;; ("http://chowching.wordpress.com/feed/" blog)
@@ -764,6 +762,127 @@ Quickly jump to my dev directory, no BS
 
 #+END_SRC
 
+* slime
+
+Asking slime to use clisp (SBCL)
+
+#+BEGIN_SRC emacs-lisp
+  (use-package slime
+    :config
+    (setq inferior-lisp-program "sbcl")
+    )
+#+END_SRC
+
+* arduino
+
+#+BEGIN_SRC emacs-lisp
+  ;; (add-to-list 'load-path "/home/chainsawriot/dev/elisp/arduino-mode")
+  ;; (setq auto-mode-alist (cons '("\\.\\(pde\\|ino\\)$" . ) auto-mode-alist))
+  (add-to-list 'auto-mode-alist '("\\.ino\\'" . c++-mode))
+  ;; (autoload 'arduino-mode "arduino-mode" "Arduino editing mode." t)
+
+#+END_SRC
+
+* JS
+
+#+BEGIN_SRC emacs-lisp
+    (defun eir-eval-in-indium ()
+    "Reinventing"
+    (interactive)
+      (if (and transient-mark-mode mark-active)
+	  (indium-eval-region (point) (mark))
+	(beginning-of-line)
+	(set-mark (point))
+	(end-of-line)
+	(if (not (equal (point) (mark)))
+	  (indium-eval-region (point) (mark))
+	;; If empty, deselect region
+	(setq mark-active nil))
+	(eir-next-code-line)
+	(setq mark-active nil)
+    ))
+
+	(use-package indium
+	  ;; :bind (
+	  ;; 	 :map javascript-mode-map
+	  ;; 	("C-c C-r" . 'indium-eval-region))
+	  ;; :config
+	  ;; (add-hook 'js-mode-hook #'indium-interaction-mode)
+	  )
+
+	  (use-package js2-mode
+	    :bind (
+  :map js2-mode-map
+       ("C-c C-r" . 'indium-eval-region)
+       ("C-q" . eir-eval-in-indium)
+		   )
+	  :config
+	  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
+
+
+#+END_SRC
+
+* vterm
+
+#+BEGIN_SRC emacs-lisp
+  ;; Manual install
+    (use-package vterm
+      :load-path "/home/chainsawriot/dev/emacs-libvterm"
+      :bind (
+	     :map vterm-mode-map
+	     ("C-y" . vterm-yank))
+      )
+    (global-set-key (kbd "C-c v") 'vterm)
+
+#+end_SRC
+
+
+* epub reading
+
+nov mode
+
+#+BEGIN_SRC emacs-lisp
+  (defun my-nov-font-setup ()
+  (face-remap-add-relative 'variable-pitch :family "Liberation Serif"
+					   :height 1.5))
+  (use-package nov
+    :config
+    (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+    (add-hook 'nov-mode-hook 'my-nov-font-setup)
+    )
+#+END_SRC
+
+* rust
+
+#+BEGIN_SRC emacs-lisp
+    (use-package rust-mode
+      :config
+      (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+)
+#+END_SRC
+
+* TS
+
+#+BEGIN_SRC emacs-lisp
+(use-package tide)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (use-package ts-comint
+    :config
+    (setq ts-comint-program-command "/home/chainsawriot/dev/fodira/twitter/node_modules/.bin/ts-node")
+    (add-hook 'typescript-mode-hook
+	(lambda ()
+	  (local-set-key (kbd "C-x C-e") 'ts-send-last-sexp)
+	  (local-set-key (kbd "C-M-x") 'ts-send-last-sexp-and-go)
+	  (local-set-key (kbd "C-c C-r") 'ts-send-region)
+	  (local-set-key (kbd "C-c C-b") 'ts-send-buffer-and-go)
+	  (local-set-key (kbd "C-c l") 'ts-load-file-and-go))))
+#+END_SRC
+
+
+* No longer using
+
 ** Goodies (pane)
 
 navigate with n and p
@@ -777,8 +896,6 @@ navigate with n and p
   ;;   )
 #+END_SRC
 
-  
-* No longer using
 
 ** Paredit
 
@@ -808,18 +925,6 @@ BTW: C-j to confirm. Disabled for using Helm instead.
   ;; (setq ido-enable-flex-matching t)
   ;; (setq ido-everywhere t)
   ;; (ido-mode 1)
-#+END_SRC
-
-
-** slime
-
-Asking slime to use clisp (SBCL)
-
-#+BEGIN_SRC emacs-lisp
-  (use-package slime
-    :config
-    (setq inferior-lisp-program "sbcl")
-    )
 #+END_SRC
 
 ** Edit-server
@@ -870,4 +975,45 @@ Make pdf open with evince
   ;; :config
   ;; (openwith-mode t)
   ;; (setq openwith-associations '(("\\.pdf\\'" "evince" (file)))))
+#+END_SRC
+
+** Sunrise
+
+#+BEGIN_SRC emacs-lisp
+  ;; (add-to-list 'load-path "/home/chainsawriot/dev/sunrise-commander")
+  ;; (require 'sunrise)
+  ;; (require 'sunrise-buttons)
+  ;; (require 'sunrise-modeline)
+
+#+end_SRC
+
+
+
+* Spotify / ncspot
+
+#+BEGIN_SRC emacs-lisp
+  ;; (defun open-spotify ()
+  ;;   (vterm t)
+  ;;   (rename-buffer "spotify" nil)
+  ;;   (vterm-send-string "ncspot")
+  ;;   (vterm-send-return))
+
+  ;; (defun spotify ()
+  ;;   (interactive)
+  ;;   (if (get-buffer "spotify")
+  ;;       (switch-to-buffer "spotify")
+  ;;     (open-spotify)))
+
+  ;; (defun spotify-play/pause ()
+  ;;   (interactive)
+  ;;   (if (get-buffer "spotify")
+  ;;       (progn (set-buffer "spotify")
+  ;; 	     (vterm-send-string "P"))))
+#+END_SRC
+
+** Emoji
+
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package emojify
+  ;;   :hook (after-init . global-emojify-mode))
 #+END_SRC

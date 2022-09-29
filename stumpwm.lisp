@@ -53,6 +53,10 @@
 	    (run-or-raise "firefox" '(:class "firefox")))
 (define-key *root-map* (kbd "b") "firefox")
 
+(defcommand thunderbird () ()
+	    (run-or-raise "thunderbird" '(:class "thunderbird")))
+(define-key *root-map* (kbd "t") "thunderbird")
+
 (defcommand spotify () ()
 	    (run-or-raise "spotify" '(:class "Spotify")))
 (define-key *root-map* (kbd "s") "spotify")

@@ -379,14 +379,14 @@
 ;; smtp
 (setq message-send-mail-function 'smtpmail-send-it
       smtpmail-stream-type 'starttls
-      smtpmail-default-smtp-server "smtp.mail.uni-mannheim.de"
-      smtpmail-smtp-server "smtp.mail.uni-mannheim.de"
+      smtpmail-default-smtp-server "exchange.uni-mannheim.de"
+      smtpmail-smtp-server "exchange.uni-mannheim.de"
       smtpmail-smtp-service 587)
 
 ;; about myself
 
-(setq user-mail-address "chung-hong.chan@mzes.uni-mannheim.de"
-      mu4e-compose-reply-to-address "chung-hong.chan@mzes.uni-mannheim.de"
+(setq user-mail-address "chung-hong.chan@uni-mannheim.de"
+      mu4e-compose-reply-to-address "chung-hong.chan@uni-mannheim.de"
       user-full-name "Chung-hong Chan")
 
 (setq mu4e-compose-signature
@@ -575,6 +575,9 @@
 	:config
 	(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
 
+
+(use-package js-comint)
+
 ;; Manual install
   (use-package vterm
     :load-path "/home/chainsawriot/dev/emacs-libvterm"
@@ -610,6 +613,11 @@
 	(local-set-key (kbd "C-c C-r") 'ts-send-region)
 	(local-set-key (kbd "C-c C-b") 'ts-send-buffer-and-go)
 	(local-set-key (kbd "C-c l") 'ts-load-file-and-go))))
+
+;; (defun nvm-which ()
+;;   (let ((output (shell-command-to-string "source ~/.nvm/nvm.sh; nvm which")))
+;;     (cadr (split-string output "[\n]+" t))))
+;;   (setq nodejs-repl-command #'nvm-which)
 
 ;; (use-package elfeed-goodies
 ;;   :init

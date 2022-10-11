@@ -118,8 +118,12 @@
   (stumpwm:run-shell-command (concatenate 'string cmd " | tr '\\n' ' '") t)
   )
 
+;; (setf stumpwm:*screen-mode-line-format*
+;;       (list '(:eval (cmd-tr "date")) "Batt: " '(:eval (cmd-tr "cat /sys/class/power_supply/CMB1/capacity")) "%"))
+
 (setf stumpwm:*screen-mode-line-format*
-      (list '(:eval (cmd-tr "date")) "Batt: " '(:eval (cmd-tr "cat /sys/class/power_supply/CMB1/capacity")) "%"))
+      (list '(:eval (cmd-tr "date")) "Batt: " '(:eval (cmd-tr "cat /sys/class/power_supply/BAT1/capacity")) "%"))
+
 
 (stumpwm:toggle-mode-line (stumpwm:current-screen)
 			  (stumpwm:current-head))
@@ -132,7 +136,7 @@
 (setf *input-window-gravity* :center)
 (setf *message-window-gravity* :center)
 
-(setq font-size 25)
+(setq font-size 20)
 (set-font (format nil "-*-*-bold-r-*-*-~D-240-*-*-*-*-*-*"
 		  font-size))
 
@@ -147,22 +151,22 @@
 ;; (spotify)
 ;; (kitty)
 
-(ql:quickload :swank)
-(defcommand swank () ()
-            (swank:create-server :port 4005
-                                 :style swank:*communication-style*
-                                 :dont-close t)
-            (echo-string (current-screen)
-                         "Starting swank. M-x slime-connect RET RET, then (in-package stumpwm)."))
+;; (ql:quickload :swank)
+;; (defcommand swank () ()
+;;             (swank:create-server :port 4005
+;;                                  :style swank:*communication-style*
+;;                                  :dont-close t)
+;;             (echo-string (current-screen)
+;;                          "Starting swank. M-x slime-connect RET RET, then (in-package stumpwm)."))
 
-(run-shell-command "ibus-daemon -d -x -r -n stump")
+;; (run-shell-command "ibus-daemon -d -x -r -n stump")
 (run-shell-command "xrandr --output HDMI-1 --same-as eDP-1")
 (run-shell-command "xrandr --output eDP-1 --off")
-(emacs)
+;; (emacs)
 
-(run-shell-command "/usr/libexec/deja-dup/deja-dup-monitor &")
-(run-shell-command "killall redshift")
-(run-shell-command "redshift &")
+;; (run-shell-command "/usr/libexec/deja-dup/deja-dup-monitor &")
+;; (run-shell-command "killall redshift")
+;; (run-shell-command "redshift &")
 (lock)					;; (run-shell-command "xss-lock -- i3lock -c 000000 &")
 
 

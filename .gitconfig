@@ -1,7 +1,7 @@
 [user]
 	name = chainsawriot
 	email = chainsawtiney@gmail.com
-	signingkey = B3025BFA6B4872B0
+	signingkey = 2C6BCA41C5D457C3
 [core]
 	editor = emacsclient --tty
 [url "ssh://git@github.com/"]
@@ -23,3 +23,8 @@
 	 frag = magenta bold
 	 old = red bold
 	 new = green bold
+[filter "lfs"]
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f

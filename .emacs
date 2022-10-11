@@ -210,6 +210,26 @@
  markdown-mode-keywords
  )
 
+(defun refresh-emacs ()
+  (interactive)
+  (org-babel-tangle-file "~/dev/dotfiles/emacs.org")
+  ;;(byte-compile-file "~/dev/dotfiles/emacs")
+  (load-file "~/dev/dotfiles/.emacs")
+  )
+(global-set-key (kbd "C-c e") #'refresh-emacs)
+
+(defun pbs ()
+  (interactive)
+  (shell-command-on-region (region-beginning) (region-end) "pbcopy")
+  )
+
+(defun knit ()
+  (interactive)
+  (save-buffer)
+  (async-shell-command (concat "Rscript -e \"rmarkdown::render('" buffer-file-name "', output_format = 'all')\"")))
+
+(global-set-key (kbd "C-c t") (lambda() (interactive) (find-file "~/dev")))
+
 (use-package magit
   :init
   (global-set-key (kbd "C-c g") 'magit-status)
@@ -352,83 +372,63 @@
 
 (setq-default c-basic-offset 4)
 
-(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")
-(require 'mu4e)
-(setq
- mue4e-headers-skip-duplicates  t
- mu4e-view-show-images t
- mu4e-view-show-addresses t
- mu4e-compose-format-flowed nil
- mu4e-date-format "%d/%m/%Y"
- mu4e-headers-date-format "%d/%m/%Y"
- mu4e-change-filenames-when-moving t
- mu4e-attachments-dir "~/Downloads"
- mu4e-maildir       "~/maildir"
- mu4e-refile-folder "/Archive"
- mu4e-sent-folder   "/Sent"
- mu4e-drafts-folder "/Drafts"
- mu4e-trash-folder  "/Trash"
- mu4e-use-fancy-chars t
- message-kill-buffer-on-exit t
- )
+;; (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
+;; (require 'mu4e)
+;; (setq
+;;  mue4e-headers-skip-duplicates  t
+;;  mu4e-view-show-images t
+;;  mu4e-view-show-addresses t
+;;  mu4e-compose-format-flowed nil
+;;  mu4e-date-format "%d/%m/%Y"
+;;  mu4e-headers-date-format "%d/%m/%Y"
+;;  mu4e-change-filenames-when-moving t
+;;  mu4e-attachments-dir "~/Downloads"
+;;  mu4e-maildir       "~/maildir"
+;;  mu4e-refile-folder "/Archive"
+;;  mu4e-sent-folder   "/Sent"
+;;  mu4e-drafts-folder "/Drafts"
+;;  mu4e-trash-folder  "/Trash"
+;;  mu4e-use-fancy-chars t
+;;  message-kill-buffer-on-exit t
+;;  )
 
-;; check email
-(setq mu4e-get-mail-command  "mbsync -a"
-      mu4e-update-interval 2400)
+;; ;; check email
+;; (setq mu4e-get-mail-command  "mbsync -a"
+;;       mu4e-update-interval 2400)
 
-;; smtp
-(setq message-send-mail-function 'smtpmail-send-it
-      smtpmail-stream-type 'starttls
-      smtpmail-default-smtp-server "exchange.uni-mannheim.de"
-      smtpmail-smtp-server "exchange.uni-mannheim.de"
-      smtpmail-smtp-service 587)
+;; ;; smtp
+;; (setq message-send-mail-function 'smtpmail-send-it
+;;       smtpmail-stream-type 'starttls
+;;       smtpmail-default-smtp-server "smtp.mail.uni-mannheim.de"
+;;       smtpmail-smtp-server "smtp.mail.uni-mannheim.de"
+;;       smtpmail-smtp-service 587)
 
-;; about myself
+;; ;; about myself
 
-(setq user-mail-address "chung-hong.chan@uni-mannheim.de"
-      mu4e-compose-reply-to-address "chung-hong.chan@uni-mannheim.de"
-      user-full-name "Chung-hong Chan")
+;; (setq user-mail-address "chung-hong.chan@mzes.uni-mannheim.de"
+;;       mu4e-compose-reply-to-address "chung-hong.chan@mzes.uni-mannheim.de"
+;;       user-full-name "Chung-hong Chan")
 
-(setq mu4e-compose-signature
-      "Dr. Chung-hong Chan\nFellow\nMannheimer Zentrum für Europäische Sozialforschung (MZES)\nUniversität Mannheim\ntwitter / github: @chainsawriot")
+;; (setq mu4e-compose-signature
+;;       "Dr. Chung-hong Chan\nFellow\nMannheimer Zentrum für Europäische Sozialforschung (MZES)\nUniversität Mannheim\ntwitter / github: @chainsawriot")
 
-(global-set-key (kbd "C-c 4") 'mu4e)
-;; No confirm
-(setq mu4e-confirm-quit nil)
-;; short cuts
-(setq mu4e-maildir-shortcuts
-      '( ("/unimannheim/inbox" .  ?i)))
+;; (global-set-key (kbd "C-c 4") 'mu4e)
+;; ;; No confirm
+;; (setq mu4e-confirm-quit nil)
+;; ;; short cuts
+;; (setq mu4e-maildir-shortcuts
+;;       '( ("/unimannheim/inbox" .  ?i)))
 
-;;	mu4e-alert
-(use-package mu4e-alert
-  :init
-  (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
-  )
+;; ;;	mu4e-alert
+;; (use-package mu4e-alert
+;;   :init
+;;   (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+;;   )
 
 (use-package xclip
   :config
   (xclip-mode 1)
   )
-
-(defun refresh-emacs ()
-  (interactive)
-  (org-babel-tangle-file "~/dev/dotfiles/emacs.org")
-  ;;(byte-compile-file "~/dev/dotfiles/emacs")
-  (load-file "~/dev/dotfiles/.emacs")
-  )
-(global-set-key (kbd "C-c e") #'refresh-emacs)
-
-(defun pbs ()
-  (interactive)
-  (shell-command-on-region (region-beginning) (region-end) "pbcopy")
-  )
-
-(defun knit ()
-  (interactive)
-  (save-buffer)
-  (async-shell-command (concat "Rscript -e \"rmarkdown::render('" buffer-file-name "', output_format = 'all')\"")))
-
-(global-set-key (kbd "C-c t") (lambda() (interactive) (find-file "~/dev")))
 
 (setq python-shell-interpreter "python3")
 
@@ -453,7 +453,7 @@
   (setq dashboard-filter-agenda-entry "MEETING|TODO")
   )
 
-(setq shr-color-visible-luminance-min 100)
+;; (setq shr-color-visible-luminance-min 100)
 
 (use-package elfeed
   :config
@@ -575,17 +575,14 @@
 	:config
 	(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
 
-
-(use-package js-comint)
-
 ;; Manual install
-  (use-package vterm
-    :load-path "/home/chainsawriot/dev/emacs-libvterm"
-    :bind (
-	   :map vterm-mode-map
-	   ("C-y" . vterm-yank))
-    )
-  (global-set-key (kbd "C-c v") 'vterm)
+  ;; (use-package vterm
+  ;;   :load-path "/home/chainsawriot/dev/emacs-libvterm"
+  ;;   :bind (
+  ;; 	   :map vterm-mode-map
+  ;; 	   ("C-y" . vterm-yank))
+  ;;   )
+  ;; (global-set-key (kbd "C-c v") 'vterm)
 
 (defun my-nov-font-setup ()
 (face-remap-add-relative 'variable-pitch :family "Liberation Serif"
@@ -601,23 +598,18 @@
       (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
 )
 
-(use-package tide)
+;; (use-package tide)
 
-(use-package ts-comint
-  :config
-  (setq ts-comint-program-command "/home/chainsawriot/dev/fodira/twitter/node_modules/.bin/ts-node")
-  (add-hook 'typescript-mode-hook
-      (lambda ()
-	(local-set-key (kbd "C-x C-e") 'ts-send-last-sexp)
-	(local-set-key (kbd "C-M-x") 'ts-send-last-sexp-and-go)
-	(local-set-key (kbd "C-c C-r") 'ts-send-region)
-	(local-set-key (kbd "C-c C-b") 'ts-send-buffer-and-go)
-	(local-set-key (kbd "C-c l") 'ts-load-file-and-go))))
-
-;; (defun nvm-which ()
-;;   (let ((output (shell-command-to-string "source ~/.nvm/nvm.sh; nvm which")))
-;;     (cadr (split-string output "[\n]+" t))))
-;;   (setq nodejs-repl-command #'nvm-which)
+;; (use-package ts-comint
+;;   :config
+;;   (setq ts-comint-program-command "/home/chainsawriot/dev/fodira/twitter/node_modules/.bin/ts-node")
+;;   (add-hook 'typescript-mode-hook
+;;       (lambda ()
+;; 	(local-set-key (kbd "C-x C-e") 'ts-send-last-sexp)
+;; 	(local-set-key (kbd "C-M-x") 'ts-send-last-sexp-and-go)
+;; 	(local-set-key (kbd "C-c C-r") 'ts-send-region)
+;; 	(local-set-key (kbd "C-c C-b") 'ts-send-buffer-and-go)
+;; 	(local-set-key (kbd "C-c l") 'ts-load-file-and-go))))
 
 ;; (use-package elfeed-goodies
 ;;   :init

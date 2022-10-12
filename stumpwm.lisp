@@ -27,12 +27,24 @@
 (define-key *root-map* (kbd "2") "vsplit")
 (define-key *root-map* (kbd "3") "hsplit")
 
-(defcommand kitty () ()
-	    "Start kitty unless it is already running, in which case focus it."
-	    (run-or-raise "kitty" '(:class "kitty")))
+;; (defcommand kitty () ()
+;; 	    "Start kitty unless it is already running, in which case focus it."
+;; 	    (run-or-raise "kitty" '(:class "kitty")))
 
-(define-key *root-map* (kbd "c") "kitty")
-(define-key *root-map* (kbd "C-c") "kitty")
+
+(defcommand term1 () ()
+  "run term emul"
+  (run-or-raise "gnome-terminal" '(:class "Term1")))
+
+(run-commands "term1")
+
+(defcommand xterm-1 () ()
+  "run an xterm instance or switch to it, if it is already running."
+  (run-or-raise "gnome-terminal --title=xterm1" '(:class "Gnome-terminal")))
+(define-key *root-map* (kbd "c") "xterm-1")
+
+;; (define-key *root-map* (kbd "c") "kitty")
+;; (define-key *root-map* (kbd "C-c") "kitty")
 
 (defcommand switch-edp () (:rest)
 	    "Switch on eDP-1 display"

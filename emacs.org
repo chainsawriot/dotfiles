@@ -10,7 +10,7 @@ s-TAB to toggle display level.
 To insert an emacs-lisp code block, type: =<se= and hit <tab>. (yasnippet)
 
 The principles
-1. Use =C-k= for eval and go.
+1. Use =C-q= for eval and go.
 2. Use =C-c C-r= for eval the selection.
 3. Don't care about speed of starting up. It should only be done once using emacs daemon and emacsclient. (Looking at the =myaliases.sh=. It has been mapped to just a single =e=)
 4. Use =C-c= plus a single character for frequently used commands. Put it in the LHS of the keyboard if possible. Most of the =C-c= combinations are not used. For example, helm-bibtex is =C-c x=.
@@ -35,13 +35,13 @@ The principles
 Initialize package mode
 
 #+BEGIN_SRC emacs-lisp
-  (require 'package) ;; You might already have this line
+  (require 'package)
   (add-to-list 'package-archives
 	       '("melpa" . "https://melpa.org/packages/"))
   (when (< emacs-major-version 24)
     ;; For important compatibility libraries like cl-lib
     (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
-  (package-initialize) ;; You might already have this line
+  (package-initialize)
 
   (unless (package-installed-p 'use-package)
     (package-refresh-contents)
@@ -49,7 +49,6 @@ Initialize package mode
 
   (require 'use-package)
   (setq use-package-always-ensure t)
-;;(global-set-key (kbd "C-c v") 'ansi-term)
 #+END_SRC
 
 ** General settings
@@ -75,10 +74,17 @@ Paren display; visual line mode
   ;; Change this from 10MB to 100MB
   (setq large-file-warning-threshold 100000000)
   (defun dired-dev ()
-      (interactive)
+    (interactive)
     (dired "~/dev"))
   (global-set-key (kbd "C-c w") 'dired-dev)
 #+END_SRC
+
+** restart
+
+#+BEGIN_SRC emacs-lisp
+(use-package restart-emacs)
+#+END_SRC
+
 
 ** helm
 
@@ -107,11 +113,14 @@ The bookmark-set is actually "C-x r m"
   ;;   (load-theme 'doom-one t)
   ;;   (doom-themes-visual-bell-config)
   ;;   )
-  (use-package kaolin-themes
+  ;; (use-package kaolin-themes
+  ;;   :config
+  ;;   (load-theme 'kaolin-dark t)
+  ;;   (kaolin-treemacs-theme))
+  (use-package tron-legacy-theme
     :config
-    (load-theme 'kaolin-dark t)
-    (kaolin-treemacs-theme))
-
+    (setq tron-legacy-theme-vivid-cursor t)
+    (load-theme 'tron-legacy t))
   ;; (use-package nord-theme
   ;;   :ensure t
   ;;   :init (load-theme 'nord))
@@ -201,17 +210,6 @@ The bookmark-set is actually "C-x r m"
   (global-set-key (kbd "C-c m") 'recompile)
 #+END_SRC
 
-** Dired
-
-#+BEGIN_SRC emacs-lisp
-  ;; (defun dired-open-file ()
-  ;;   "In dired, open the file named on this line."
-  ;;   (interactive)
-  ;;   (let* ((file (dired-get-filename nil t)))
-  ;;     (call-process "xdg-open" nil 0 nil file)))
-  ;; (define-key dired-mode-map (kbd "C-q") 'dired-open-file)
-#+END_SRC
-
 ** yaml
 
 #+BEGIN_SRC emacs-lisp
@@ -232,53 +230,53 @@ The bookmark-set is actually "C-x r m"
 * R
 ** Emacs Speaks Statistics (ESS)
 
-  - type >> quickly to insert pipe
-  - type __ quickly to insert reverse assignment
-  - "_" works in the old skool way.
-  - C-q to eval-and-go (override the original C-q, but I don't use it anyway.)
-  - M-x lp : a quicker way to devtools::load_all()
-  - ess_rproj
+- type >> quickly to insert pipe
+- type __ quickly to insert reverse assignment
+- "_" works in the old skool way.
+- C-q to eval-and-go (override the original C-q, but I don't use it anyway.)
+- M-x lp : a quicker way to devtools::load_all()
+- ess_rproj
 
-    #+BEGIN_SRC emacs-lisp
-      (use-package ess
-	:bind (
-	       :map ess-r-mode-map 
-	       ("_" . 'ess-insert-assign)
-	       ("C-q" . 'ess-eval-region-or-line-and-step)
-	       ("C-c C-k" . 'ess-request-a-process)
-	       :map inferior-ess-r-mode-map 
-	       ("_" . 'ess-insert-assign))
-	:config
-	(require 'ess-r-mode)
-	(require 'ess-r-package)
-	(setq ess-r-package-auto-enable-namespaced-evaluation nil)
-	(setq ess-ask-for-ess-directory nil)
-	(defalias 'lp 'ess-r-devtools-load-package)
-	(defalias 'lt 'ess-r-devtools-test-package)
-	(defalias 'lc 'ess-r-devtools-check-package)
-	)
+  #+BEGIN_SRC emacs-lisp
+    (use-package ess
+      :bind (
+	     :map ess-r-mode-map 
+	     ("_" . 'ess-insert-assign)
+	     ("C-q" . 'ess-eval-region-or-line-and-step)
+	     ("C-c C-k" . 'ess-request-a-process)
+	     :map inferior-ess-r-mode-map 
+	     ("_" . 'ess-insert-assign))
+      :config
+      (require 'ess-r-mode)
+      (require 'ess-r-package)
+      (setq ess-r-package-auto-enable-namespaced-evaluation nil)
+      (setq ess-ask-for-ess-directory nil)
+      (defalias 'lp 'ess-r-devtools-load-package)
+      (defalias 'lt 'ess-r-devtools-test-package)
+      (defalias 'lc 'ess-r-devtools-check-package)
+      )
 
-      (use-package key-chord
-	:init
-	(key-chord-mode 1)
-	(key-chord-define ess-r-mode-map ">>" " %>% ")
-	(key-chord-define ess-r-mode-map "++" " -> ")
-	(key-chord-define inferior-ess-r-mode-map ">>" " %>% ")
-	(key-chord-define inferior-ess-r-mode-map "++" " -> ")
-	)
+    (use-package key-chord
+      :init
+      (key-chord-mode 1)
+      (key-chord-define ess-r-mode-map ">>" " %>% ")
+      (key-chord-define ess-r-mode-map "++" " -> ")
+      (key-chord-define inferior-ess-r-mode-map ">>" " %>% ")
+      (key-chord-define inferior-ess-r-mode-map "++" " -> ")
+      )
 
-      (load-file "~/dev/ess_rproj/ess_rproj.el")
-      (add-hook 'ess-mode-hook #'ess-rproj)
+    (load-file "~/dev/ess_rproj/ess_rproj.el")
+    (add-hook 'ess-mode-hook #'ess-rproj)
 
-      (defun render-readme ()
-	"A elisp function to quickly render README.Rmd in a package directory"
-	(interactive)
-	(setq-local readmepath (car (directory-files (expand-file-name (plist-get (ess-r-package-info default-directory) :root)) t "README\\.[Rr][Mm][Dd]")))
-	(if (stringp readmepath)
-	    (ess-eval-linewise (format "rmarkdown::render('%s', output_format = 'all')" readmepath))
-	  (message "No README.RMD found.")))
-      (defalias 'rmd #'render-readme)
-    #+END_SRC
+    (defun render-readme ()
+      "A elisp function to quickly render README.Rmd in a package directory"
+      (interactive)
+      (setq-local readmepath (car (directory-files (expand-file-name (plist-get (ess-r-package-info default-directory) :root)) t "README\\.[Rr][Mm][Dd]")))
+      (if (stringp readmepath)
+	  (ess-eval-linewise (format "rmarkdown::render('%s', output_format = 'all')" readmepath))
+	(message "No README.RMD found.")))
+    (defalias 'rmd #'render-readme)
+  #+END_SRC
 
 
 Coloring
@@ -318,6 +316,13 @@ Coloring
 
 #+END_SRC
 
+** Quarto Mode
+
+#+BEGIN_SRC emacs-lisp
+(use-package quarto-mode)
+#+END_SRC
+
+
 * Customized functions
 
 Refreshing emacs config.
@@ -330,15 +335,6 @@ Refreshing emacs config.
     (load-file "~/dev/dotfiles/.emacs")
     )
   (global-set-key (kbd "C-c e") #'refresh-emacs)
-#+END_SRC
-
-Copy the region to Mac OS X clipboard
-
-#+BEGIN_SRC emacs-lisp
-  (defun pbs ()
-    (interactive)
-    (shell-command-on-region (region-beginning) (region-end) "pbcopy")
-    )
 #+END_SRC
 
 The weave function provided by ESS is so convoluted. Usually, I just want to do simple thing like this. No bullshit.
@@ -438,7 +434,7 @@ Customized default cite key generation.
 Insert doi into bib.bib
 
 #+BEGIN_SRC emacs-lisp
-(defun ins-doi ()
+  (defun ins-doi ()
     (interactive)
     (progn
       (setq doi-to-query (read-string "DOI "))
@@ -472,19 +468,19 @@ Insert doi into bib.bib
 * org
 
 #+BEGIN_SRC emacs-lisp
-    (setq org-log-done 'time)
-    (setq org-support-shift-select 'always)
-    (setq org-confirm-babel-evaluate nil)
+  (setq org-log-done 'time)
+  (setq org-support-shift-select 'always)
+  (setq org-confirm-babel-evaluate nil)
 
-    (require 'ox-md)
+  (require 'ox-md)
 
 
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((emacs-lisp . t)
-       (lisp . t)
-       (C . t)
-       (R . t)))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (lisp . t)
+     (C . t)
+     (R . t)))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -544,7 +540,7 @@ My braindump / Zettelkasten.
 #+BEGIN_SRC emacs-lisp
   (use-package deft
     :init
-    (setq deft-extensions '("rmd" "markdown" "md" "org"))
+    (setq deft-extensions '("qmd" "rmd" "markdown" "md" "org"))
     (setq deft-directory "~/dev/braindump")
     (setq deft-recursive t)
     ;;  (setq deft-extensions '("org"))
@@ -552,7 +548,8 @@ My braindump / Zettelkasten.
     (setq deft-text-mode 'org-mode)
     (setq deft-use-filename-as-title t)
     (setq deft-use-filter-string-for-filename t)
-    (setq deft-auto-save-interval 10)
+    (setq deft-auto-save-interval 30)
+    (setq deft-file-limit 10)
     (global-set-key (kbd "C-c d") 'deft)  
     )
 
@@ -562,64 +559,6 @@ My braindump / Zettelkasten.
 
 #+BEGIN_SRC emacs-lisp
   (setq-default c-basic-offset 4)
-#+END_SRC
-
-* email mu4e and co.
-
-#+BEGIN_SRC emacs-lisp
-  ;; (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
-  ;; (require 'mu4e)
-  ;; (setq
-  ;;  mue4e-headers-skip-duplicates  t
-  ;;  mu4e-view-show-images t
-  ;;  mu4e-view-show-addresses t
-  ;;  mu4e-compose-format-flowed nil
-  ;;  mu4e-date-format "%d/%m/%Y"
-  ;;  mu4e-headers-date-format "%d/%m/%Y"
-  ;;  mu4e-change-filenames-when-moving t
-  ;;  mu4e-attachments-dir "~/Downloads"
-  ;;  mu4e-maildir       "~/maildir"
-  ;;  mu4e-refile-folder "/Archive"
-  ;;  mu4e-sent-folder   "/Sent"
-  ;;  mu4e-drafts-folder "/Drafts"
-  ;;  mu4e-trash-folder  "/Trash"
-  ;;  mu4e-use-fancy-chars t
-  ;;  message-kill-buffer-on-exit t
-  ;;  )
-
-  ;; ;; check email
-  ;; (setq mu4e-get-mail-command  "mbsync -a"
-  ;;       mu4e-update-interval 2400)
-
-  ;; ;; smtp
-  ;; (setq message-send-mail-function 'smtpmail-send-it
-  ;;       smtpmail-stream-type 'starttls
-  ;;       smtpmail-default-smtp-server "smtp.mail.uni-mannheim.de"
-  ;;       smtpmail-smtp-server "smtp.mail.uni-mannheim.de"
-  ;;       smtpmail-smtp-service 587)
-
-  ;; ;; about myself
-
-  ;; (setq user-mail-address "chung-hong.chan@mzes.uni-mannheim.de"
-  ;;       mu4e-compose-reply-to-address "chung-hong.chan@mzes.uni-mannheim.de"
-  ;;       user-full-name "Chung-hong Chan")
-
-  ;; (setq mu4e-compose-signature
-  ;;       "Dr. Chung-hong Chan\nFellow\nMannheimer Zentrum für Europäische Sozialforschung (MZES)\nUniversität Mannheim\ntwitter / github: @chainsawriot")
-
-  ;; (global-set-key (kbd "C-c 4") 'mu4e)
-  ;; ;; No confirm
-  ;; (setq mu4e-confirm-quit nil)
-  ;; ;; short cuts
-  ;; (setq mu4e-maildir-shortcuts
-  ;;       '( ("/unimannheim/inbox" .  ?i)))
-
-  ;; ;;	mu4e-alert
-  ;; (use-package mu4e-alert
-  ;;   :init
-  ;;   (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
-  ;;   )
-
 #+END_SRC
 
 * xclip
@@ -660,25 +599,22 @@ My braindump / Zettelkasten.
 * Dashboard
 
 #+BEGIN_SRC emacs-lisp
-  (use-package dashboard
-    :ensure t
-    :config
-    (dashboard-setup-startup-hook)
-    ;; (setq dashboard-match-agenda-entry
-    ;;   "TODO=\"TODO\"|TODO=\"MEETING\"")
-    (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
-    (setq dashboard-items '((recents  . 5)
-			    (registers . 5)
-			    (agenda . 5)))
-    (setq dashboard-week-agenda t)
-    (setq dashboard-filter-agenda-entry "MEETING|TODO")
-    )
-#+END_SRC
+    (use-package dashboard
+      :ensure t
+      :config
 
-* EWW
-
-#+BEGIN_SRC emacs-lisp
-  ;; (setq shr-color-visible-luminance-min 100)
+      (dashboard-setup-startup-hook)
+      ;; (setq dashboard-match-agenda-entry
+      ;;   "TODO=\"TODO\"|TODO=\"MEETING\"")
+      (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+    
+      (setq dashboard-startup-banner 'logo)
+      (setq dashboard-items '((recents  . 10)
+			      (registers . 5)
+			      ))
+      ;;(setq dashboard-week-agenda t)
+      ;;(setq dashboard-filter-agenda-entry "MEETING|TODO")
+      )
 #+END_SRC
 
 * Elfeed
@@ -687,7 +623,7 @@ My braindump / Zettelkasten.
   (use-package elfeed
     :config
     (setq elfeed-feeds '(
-			 ("http://feeds.feedburner.com/thisweekinlinuxnew" linux)
+			 ;; ("http://feeds.feedburner.com/thisweekinlinuxnew" linux)
 			 ("http://fullcirclemagazine.org/feed/" linux)
 			 ("http://www.raspberrypi.org/feed" linux)
 			 ("http://www.greghendershott.com/feeds/all.rss.xml" emacs)
@@ -701,7 +637,7 @@ My braindump / Zettelkasten.
 			 ("http://yccmcb.blogspot.com/feeds/posts/default" blog)
 			 ("http://www.jstatsoft.org/rss" journal)
 			 ("http://kbotjammer.blogspot.hk/feeds/posts/default" blog)
-			 ("https://www.tagesschau.de/xml/rss2/" news)
+			 ;;("https://www.tagesschau.de/xml/rss2/" news)
 			 ("https://www.tandfonline.com/feed/rss/hcms20" journal)
 			 ("https://computationalcommunication.org/ccr/gateway/plugin/WebFeedGatewayPlugin/atom" journal)
 			 ("https://ijoc.org/index.php/ijoc/gateway/plugin/WebFeedGatewayPlugin/atom" journal)
@@ -787,56 +723,41 @@ Asking slime to use clisp (SBCL)
 * JS
 
 #+BEGIN_SRC emacs-lisp
-    (defun eir-eval-in-indium ()
+  (defun eir-eval-in-indium ()
     "Reinventing"
     (interactive)
-      (if (and transient-mark-mode mark-active)
-	  (indium-eval-region (point) (mark))
-	(beginning-of-line)
-	(set-mark (point))
-	(end-of-line)
-	(if (not (equal (point) (mark)))
+    (if (and transient-mark-mode mark-active)
+	(indium-eval-region (point) (mark))
+      (beginning-of-line)
+      (set-mark (point))
+      (end-of-line)
+      (if (not (equal (point) (mark)))
 	  (indium-eval-region (point) (mark))
 	;; If empty, deselect region
 	(setq mark-active nil))
-	(eir-next-code-line)
-	(setq mark-active nil)
-    ))
+      (eir-next-code-line)
+      (setq mark-active nil)
+      ))
 
-	(use-package indium
-	  ;; :bind (
-	  ;; 	 :map javascript-mode-map
-	  ;; 	("C-c C-r" . 'indium-eval-region))
-	  ;; :config
-	  ;; (add-hook 'js-mode-hook #'indium-interaction-mode)
-	  )
+  (use-package indium
+    ;; :bind (
+    ;; 	 :map javascript-mode-map
+    ;; 	("C-c C-r" . 'indium-eval-region))
+    ;; :config
+    ;; (add-hook 'js-mode-hook #'indium-interaction-mode)
+    )
 
-	  (use-package js2-mode
-	    :bind (
-  :map js2-mode-map
-       ("C-c C-r" . 'indium-eval-region)
-       ("C-q" . eir-eval-in-indium)
-		   )
-	  :config
-	  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
+  (use-package js2-mode
+    :bind (
+	   :map js2-mode-map
+	   ("C-c C-r" . 'indium-eval-region)
+	   ("C-q" . eir-eval-in-indium)
+	   )
+    :config
+    (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
 
 
 #+END_SRC
-
-* vterm
-
-#+BEGIN_SRC emacs-lisp
-  ;; Manual install
-    ;; (use-package vterm
-    ;;   :load-path "/home/chainsawriot/dev/emacs-libvterm"
-    ;;   :bind (
-    ;; 	   :map vterm-mode-map
-    ;; 	   ("C-y" . vterm-yank))
-    ;;   )
-    ;; (global-set-key (kbd "C-c v") 'vterm)
-
-#+end_SRC
-
 
 * epub reading
 
@@ -844,8 +765,8 @@ nov mode
 
 #+BEGIN_SRC emacs-lisp
   (defun my-nov-font-setup ()
-  (face-remap-add-relative 'variable-pitch :family "Liberation Serif"
-					   :height 1.5))
+    (face-remap-add-relative 'variable-pitch :family "Liberation Serif"
+			     :height 1.5))
   (use-package nov
     :config
     (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
@@ -856,29 +777,25 @@ nov mode
 * rust
 
 #+BEGIN_SRC emacs-lisp
-    (use-package rust-mode
-      :config
-      (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
-)
+  (use-package rust-mode
+    :config
+    (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+    )
 #+END_SRC
 
-* TS
+* Mastodon
 
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package tide)
-#+END_SRC
 
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package ts-comint
-  ;;   :config
-  ;;   (setq ts-comint-program-command "/home/chainsawriot/dev/fodira/twitter/node_modules/.bin/ts-node")
-  ;;   (add-hook 'typescript-mode-hook
-  ;;       (lambda ()
-  ;; 	(local-set-key (kbd "C-x C-e") 'ts-send-last-sexp)
-  ;; 	(local-set-key (kbd "C-M-x") 'ts-send-last-sexp-and-go)
-  ;; 	(local-set-key (kbd "C-c C-r") 'ts-send-region)
-  ;; 	(local-set-key (kbd "C-c C-b") 'ts-send-buffer-and-go)
-  ;; 	(local-set-key (kbd "C-c l") 'ts-load-file-and-go))))
+  (use-package mastodon
+    :ensure t
+    :config
+  
+
+    (setq mastodon-instance-url "https://emacs.ch"
+	  mastodon-active-user "chainsawriot")
+    )
+
 #+END_SRC
 
 
@@ -1018,3 +935,117 @@ Make pdf open with evince
   ;; (use-package emojify
   ;;   :hook (after-init . global-emojify-mode))
 #+END_SRC
+
+* TS
+
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package tide)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package ts-comint
+  ;;   :config
+  ;;   (setq ts-comint-program-command "/home/chainsawriot/dev/fodira/twitter/node_modules/.bin/ts-node")
+  ;;   (add-hook 'typescript-mode-hook
+  ;;       (lambda ()
+  ;; 	(local-set-key (kbd "C-x C-e") 'ts-send-last-sexp)
+  ;; 	(local-set-key (kbd "C-M-x") 'ts-send-last-sexp-and-go)
+  ;; 	(local-set-key (kbd "C-c C-r") 'ts-send-region)
+  ;; 	(local-set-key (kbd "C-c C-b") 'ts-send-buffer-and-go)
+  ;; 	(local-set-key (kbd "C-c l") 'ts-load-file-and-go))))
+#+END_SRC
+* Dired
+
+#+BEGIN_SRC emacs-lisp
+  ;; (defun dired-open-file ()
+  ;;   "In dired, open the file named on this line."
+  ;;   (interactive)
+  ;;   (let* ((file (dired-get-filename nil t)))
+  ;;     (call-process "xdg-open" nil 0 nil file)))
+  ;; (define-key dired-mode-map (kbd "C-q") 'dired-open-file)
+#+END_SRC
+
+Copy the region to Mac OS X clipboard
+
+#+BEGIN_SRC emacs-lisp
+  ;; (defun pbs ()
+  ;;   (interactive)
+  ;;   (shell-command-on-region (region-beginning) (region-end) "pbcopy")
+  ;;   )
+#+END_SRC
+
+* email mu4e and co.
+
+#+BEGIN_SRC emacs-lisp
+  ;; (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
+  ;; (require 'mu4e)
+  ;; (setq
+  ;;  mue4e-headers-skip-duplicates  t
+  ;;  mu4e-view-show-images t
+  ;;  mu4e-view-show-addresses t
+  ;;  mu4e-compose-format-flowed nil
+  ;;  mu4e-date-format "%d/%m/%Y"
+  ;;  mu4e-headers-date-format "%d/%m/%Y"
+  ;;  mu4e-change-filenames-when-moving t
+  ;;  mu4e-attachments-dir "~/Downloads"
+  ;;  mu4e-maildir       "~/maildir"
+  ;;  mu4e-refile-folder "/Archive"
+  ;;  mu4e-sent-folder   "/Sent"
+  ;;  mu4e-drafts-folder "/Drafts"
+  ;;  mu4e-trash-folder  "/Trash"
+  ;;  mu4e-use-fancy-chars t
+  ;;  message-kill-buffer-on-exit t
+  ;;  )
+
+  ;; ;; check email
+  ;; (setq mu4e-get-mail-command  "mbsync -a"
+  ;;       mu4e-update-interval 2400)
+
+  ;; ;; smtp
+  ;; (setq message-send-mail-function 'smtpmail-send-it
+  ;;       smtpmail-stream-type 'starttls
+  ;;       smtpmail-default-smtp-server "smtp.mail.uni-mannheim.de"
+  ;;       smtpmail-smtp-server "smtp.mail.uni-mannheim.de"
+  ;;       smtpmail-smtp-service 587)
+
+  ;; ;; about myself
+
+  ;; (setq user-mail-address "chung-hong.chan@mzes.uni-mannheim.de"
+  ;;       mu4e-compose-reply-to-address "chung-hong.chan@mzes.uni-mannheim.de"
+  ;;       user-full-name "Chung-hong Chan")
+
+  ;; (setq mu4e-compose-signature
+  ;;       "Dr. Chung-hong Chan\nFellow\nMannheimer Zentrum für Europäische Sozialforschung (MZES)\nUniversität Mannheim\ntwitter / github: @chainsawriot")
+
+  ;; (global-set-key (kbd "C-c 4") 'mu4e)
+  ;; ;; No confirm
+  ;; (setq mu4e-confirm-quit nil)
+  ;; ;; short cuts
+  ;; (setq mu4e-maildir-shortcuts
+  ;;       '( ("/unimannheim/inbox" .  ?i)))
+
+  ;; ;;	mu4e-alert
+  ;; (use-package mu4e-alert
+  ;;   :init
+  ;;   (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+  ;;   )
+
+#+END_SRC
+* EWW
+
+#+BEGIN_SRC emacs-lisp
+  ;; (setq shr-color-visible-luminance-min 100)
+#+END_SRC
+* vterm
+
+#+BEGIN_SRC emacs-lisp
+  ;; Manual install
+  (use-package vterm
+    :bind (
+	     :map vterm-mode-map
+	     ("C-y" . vterm-yank))
+    )
+  (global-set-key (kbd "C-c v") 'vterm)
+
+#+end_SRC
+

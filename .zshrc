@@ -64,11 +64,7 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
-if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='emacsclient -c &'
-else
-  export EDITOR='emacsclient -c &'
-fi
+export EDITOR='emacsclient -tty'
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -101,7 +97,7 @@ PATH=$HOME/.local/bin:$PATH
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-[ -f ~/tools/z/z.sh ] && source ~/tools/z/z.sh
+[ -f ~/dev/z/z.sh ] && source ~/dev/z/z.sh
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/chainsaw/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/chainsaw/Downloads/google-cloud-sdk/path.zsh.inc'; fi
@@ -136,3 +132,5 @@ export NVM_DIR="$HOME/.nvm"
 export PATH="$NVM_DIR/versions/node/v17.1.0/bin:$PATH"
 
 export TESTTHAT_CPUS=4
+
+# [ -s "$HOME/.TinyTeX/bin/x86_64-linux" ] && export PATH="$HOME/.TinyTeX/bin/x86_64-linux:$PATH"

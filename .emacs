@@ -1,18 +1,17 @@
-(require 'package) ;; You might already have this line
-  (add-to-list 'package-archives
-	       '("melpa" . "https://melpa.org/packages/"))
-  (when (< emacs-major-version 24)
-    ;; For important compatibility libraries like cl-lib
-    (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
-  (package-initialize) ;; You might already have this line
+(require 'package)
+(add-to-list 'package-archives
+	     '("melpa" . "https://melpa.org/packages/"))
+(when (< emacs-major-version 24)
+  ;; For important compatibility libraries like cl-lib
+  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+(package-initialize)
 
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-    (package-install 'use-package))
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
 
-  (require 'use-package)
-  (setq use-package-always-ensure t)
-;;(global-set-key (kbd "C-c v") 'ansi-term)
+(require 'use-package)
+(setq use-package-always-ensure t)
 
 (setq inhibit-startup-message t)
 (setq master-font-family "Fira Code")
@@ -32,9 +31,11 @@
 ;; Change this from 10MB to 100MB
 (setq large-file-warning-threshold 100000000)
 (defun dired-dev ()
-    (interactive)
+  (interactive)
   (dired "~/dev"))
 (global-set-key (kbd "C-c w") 'dired-dev)
+
+(use-package restart-emacs)
 
 (use-package helm
   :bind (("M-x" . helm-M-x)
@@ -55,11 +56,14 @@
 ;;   (load-theme 'doom-one t)
 ;;   (doom-themes-visual-bell-config)
 ;;   )
-(use-package kaolin-themes
+;; (use-package kaolin-themes
+;;   :config
+;;   (load-theme 'kaolin-dark t)
+;;   (kaolin-treemacs-theme))
+(use-package tron-legacy-theme
   :config
-  (load-theme 'kaolin-dark t)
-  (kaolin-treemacs-theme))
-
+  (setq tron-legacy-theme-vivid-cursor t)
+  (load-theme 'tron-legacy t))
 ;; (use-package nord-theme
 ;;   :ensure t
 ;;   :init (load-theme 'nord))
@@ -127,13 +131,6 @@
   (rg-enable-default-bindings))
 
 (global-set-key (kbd "C-c m") 'recompile)
-
-;; (defun dired-open-file ()
-;;   "In dired, open the file named on this line."
-;;   (interactive)
-;;   (let* ((file (dired-get-filename nil t)))
-;;     (call-process "xdg-open" nil 0 nil file)))
-;; (define-key dired-mode-map (kbd "C-q") 'dired-open-file)
 
 (use-package yaml-mode)
 
@@ -210,6 +207,8 @@
  markdown-mode-keywords
  )
 
+(use-package quarto-mode)
+
 (defun refresh-emacs ()
   (interactive)
   (org-babel-tangle-file "~/dev/dotfiles/emacs.org")
@@ -217,11 +216,6 @@
   (load-file "~/dev/dotfiles/.emacs")
   )
 (global-set-key (kbd "C-c e") #'refresh-emacs)
-
-(defun pbs ()
-  (interactive)
-  (shell-command-on-region (region-beginning) (region-end) "pbcopy")
-  )
 
 (defun knit ()
   (interactive)
@@ -287,14 +281,14 @@
   )
 
 (defun ins-doi ()
-    (interactive)
-    (progn
-      (setq doi-to-query (read-string "DOI "))
-      (find-file "~/dev/dotfiles/bib.bib")
-      (end-of-buffer)
-      (doi-insert-bibtex doi-to-query)
-      )
+  (interactive)
+  (progn
+    (setq doi-to-query (read-string "DOI "))
+    (find-file "~/dev/dotfiles/bib.bib")
+    (end-of-buffer)
+    (doi-insert-bibtex doi-to-query)
     )
+  )
 
 (use-package eval-in-repl
   :bind (
@@ -358,7 +352,7 @@
 
 (use-package deft
   :init
-  (setq deft-extensions '("rmd" "markdown" "md" "org"))
+  (setq deft-extensions '("qmd" "rmd" "markdown" "md" "org"))
   (setq deft-directory "~/dev/braindump")
   (setq deft-recursive t)
   ;;  (setq deft-extensions '("org"))
@@ -366,64 +360,12 @@
   (setq deft-text-mode 'org-mode)
   (setq deft-use-filename-as-title t)
   (setq deft-use-filter-string-for-filename t)
-  (setq deft-auto-save-interval 10)
+  (setq deft-auto-save-interval 30)
+  (setq deft-file-limit 10)
   (global-set-key (kbd "C-c d") 'deft)  
   )
 
 (setq-default c-basic-offset 4)
-
-;; (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
-;; (require 'mu4e)
-;; (setq
-;;  mue4e-headers-skip-duplicates  t
-;;  mu4e-view-show-images t
-;;  mu4e-view-show-addresses t
-;;  mu4e-compose-format-flowed nil
-;;  mu4e-date-format "%d/%m/%Y"
-;;  mu4e-headers-date-format "%d/%m/%Y"
-;;  mu4e-change-filenames-when-moving t
-;;  mu4e-attachments-dir "~/Downloads"
-;;  mu4e-maildir       "~/maildir"
-;;  mu4e-refile-folder "/Archive"
-;;  mu4e-sent-folder   "/Sent"
-;;  mu4e-drafts-folder "/Drafts"
-;;  mu4e-trash-folder  "/Trash"
-;;  mu4e-use-fancy-chars t
-;;  message-kill-buffer-on-exit t
-;;  )
-
-;; ;; check email
-;; (setq mu4e-get-mail-command  "mbsync -a"
-;;       mu4e-update-interval 2400)
-
-;; ;; smtp
-;; (setq message-send-mail-function 'smtpmail-send-it
-;;       smtpmail-stream-type 'starttls
-;;       smtpmail-default-smtp-server "smtp.mail.uni-mannheim.de"
-;;       smtpmail-smtp-server "smtp.mail.uni-mannheim.de"
-;;       smtpmail-smtp-service 587)
-
-;; ;; about myself
-
-;; (setq user-mail-address "chung-hong.chan@mzes.uni-mannheim.de"
-;;       mu4e-compose-reply-to-address "chung-hong.chan@mzes.uni-mannheim.de"
-;;       user-full-name "Chung-hong Chan")
-
-;; (setq mu4e-compose-signature
-;;       "Dr. Chung-hong Chan\nFellow\nMannheimer Zentrum für Europäische Sozialforschung (MZES)\nUniversität Mannheim\ntwitter / github: @chainsawriot")
-
-;; (global-set-key (kbd "C-c 4") 'mu4e)
-;; ;; No confirm
-;; (setq mu4e-confirm-quit nil)
-;; ;; short cuts
-;; (setq mu4e-maildir-shortcuts
-;;       '( ("/unimannheim/inbox" .  ?i)))
-
-;; ;;	mu4e-alert
-;; (use-package mu4e-alert
-;;   :init
-;;   (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
-;;   )
 
 (use-package xclip
   :config
@@ -442,23 +384,24 @@
 (use-package dashboard
   :ensure t
   :config
+
   (dashboard-setup-startup-hook)
   ;; (setq dashboard-match-agenda-entry
   ;;   "TODO=\"TODO\"|TODO=\"MEETING\"")
   (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
-  (setq dashboard-items '((recents  . 5)
-			  (registers . 5)
-			  (agenda . 5)))
-  (setq dashboard-week-agenda t)
-  (setq dashboard-filter-agenda-entry "MEETING|TODO")
-  )
 
-;; (setq shr-color-visible-luminance-min 100)
+  (setq dashboard-startup-banner 'logo)
+  (setq dashboard-items '((recents  . 10)
+			  (registers . 5)
+			  ))
+  ;;(setq dashboard-week-agenda t)
+  ;;(setq dashboard-filter-agenda-entry "MEETING|TODO")
+  )
 
 (use-package elfeed
   :config
   (setq elfeed-feeds '(
-		       ("http://feeds.feedburner.com/thisweekinlinuxnew" linux)
+		       ;; ("http://feeds.feedburner.com/thisweekinlinuxnew" linux)
 		       ("http://fullcirclemagazine.org/feed/" linux)
 		       ("http://www.raspberrypi.org/feed" linux)
 		       ("http://www.greghendershott.com/feeds/all.rss.xml" emacs)
@@ -472,7 +415,7 @@
 		       ("http://yccmcb.blogspot.com/feeds/posts/default" blog)
 		       ("http://www.jstatsoft.org/rss" journal)
 		       ("http://kbotjammer.blogspot.hk/feeds/posts/default" blog)
-		       ("https://www.tagesschau.de/xml/rss2/" news)
+		       ;;("https://www.tagesschau.de/xml/rss2/" news)
 		       ("https://www.tandfonline.com/feed/rss/hcms20" journal)
 		       ("https://computationalcommunication.org/ccr/gateway/plugin/WebFeedGatewayPlugin/atom" journal)
 		       ("https://ijoc.org/index.php/ijoc/gateway/plugin/WebFeedGatewayPlugin/atom" journal)
@@ -545,48 +488,39 @@
 (defun eir-eval-in-indium ()
   "Reinventing"
   (interactive)
-    (if (and transient-mark-mode mark-active)
-	(indium-eval-region (point) (mark))
-      (beginning-of-line)
-      (set-mark (point))
-      (end-of-line)
-      (if (not (equal (point) (mark)))
+  (if (and transient-mark-mode mark-active)
+      (indium-eval-region (point) (mark))
+    (beginning-of-line)
+    (set-mark (point))
+    (end-of-line)
+    (if (not (equal (point) (mark)))
 	(indium-eval-region (point) (mark))
       ;; If empty, deselect region
       (setq mark-active nil))
-      (eir-next-code-line)
-      (setq mark-active nil)
-  ))
+    (eir-next-code-line)
+    (setq mark-active nil)
+    ))
 
-      (use-package indium
-	;; :bind (
-	;; 	 :map javascript-mode-map
-	;; 	("C-c C-r" . 'indium-eval-region))
-	;; :config
-	;; (add-hook 'js-mode-hook #'indium-interaction-mode)
-	)
+(use-package indium
+  ;; :bind (
+  ;; 	 :map javascript-mode-map
+  ;; 	("C-c C-r" . 'indium-eval-region))
+  ;; :config
+  ;; (add-hook 'js-mode-hook #'indium-interaction-mode)
+  )
 
-	(use-package js2-mode
-	  :bind (
-:map js2-mode-map
-     ("C-c C-r" . 'indium-eval-region)
-     ("C-q" . eir-eval-in-indium)
-		 )
-	:config
-	(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
-
-;; Manual install
-  ;; (use-package vterm
-  ;;   :load-path "/home/chainsawriot/dev/emacs-libvterm"
-  ;;   :bind (
-  ;; 	   :map vterm-mode-map
-  ;; 	   ("C-y" . vterm-yank))
-  ;;   )
-  ;; (global-set-key (kbd "C-c v") 'vterm)
+(use-package js2-mode
+  :bind (
+	 :map js2-mode-map
+	 ("C-c C-r" . 'indium-eval-region)
+	 ("C-q" . eir-eval-in-indium)
+	 )
+  :config
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
 
 (defun my-nov-font-setup ()
-(face-remap-add-relative 'variable-pitch :family "Liberation Serif"
-					 :height 1.5))
+  (face-remap-add-relative 'variable-pitch :family "Liberation Serif"
+			   :height 1.5))
 (use-package nov
   :config
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
@@ -594,22 +528,18 @@
   )
 
 (use-package rust-mode
-      :config
-      (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
-)
+  :config
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+  )
 
-;; (use-package tide)
+(use-package mastodon
+  :ensure t
+  :config
 
-;; (use-package ts-comint
-;;   :config
-;;   (setq ts-comint-program-command "/home/chainsawriot/dev/fodira/twitter/node_modules/.bin/ts-node")
-;;   (add-hook 'typescript-mode-hook
-;;       (lambda ()
-;; 	(local-set-key (kbd "C-x C-e") 'ts-send-last-sexp)
-;; 	(local-set-key (kbd "C-M-x") 'ts-send-last-sexp-and-go)
-;; 	(local-set-key (kbd "C-c C-r") 'ts-send-region)
-;; 	(local-set-key (kbd "C-c C-b") 'ts-send-buffer-and-go)
-;; 	(local-set-key (kbd "C-c l") 'ts-load-file-and-go))))
+
+  (setq mastodon-instance-url "https://emacs.ch"
+	mastodon-active-user "chainsawriot")
+  )
 
 ;; (use-package elfeed-goodies
 ;;   :init
@@ -694,3 +624,91 @@
 
 ;; (use-package emojify
 ;;   :hook (after-init . global-emojify-mode))
+
+;; (use-package tide)
+
+;; (use-package ts-comint
+;;   :config
+;;   (setq ts-comint-program-command "/home/chainsawriot/dev/fodira/twitter/node_modules/.bin/ts-node")
+;;   (add-hook 'typescript-mode-hook
+;;       (lambda ()
+;; 	(local-set-key (kbd "C-x C-e") 'ts-send-last-sexp)
+;; 	(local-set-key (kbd "C-M-x") 'ts-send-last-sexp-and-go)
+;; 	(local-set-key (kbd "C-c C-r") 'ts-send-region)
+;; 	(local-set-key (kbd "C-c C-b") 'ts-send-buffer-and-go)
+;; 	(local-set-key (kbd "C-c l") 'ts-load-file-and-go))))
+
+;; (defun dired-open-file ()
+;;   "In dired, open the file named on this line."
+;;   (interactive)
+;;   (let* ((file (dired-get-filename nil t)))
+;;     (call-process "xdg-open" nil 0 nil file)))
+;; (define-key dired-mode-map (kbd "C-q") 'dired-open-file)
+
+;; (defun pbs ()
+;;   (interactive)
+;;   (shell-command-on-region (region-beginning) (region-end) "pbcopy")
+;;   )
+
+;; (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
+;; (require 'mu4e)
+;; (setq
+;;  mue4e-headers-skip-duplicates  t
+;;  mu4e-view-show-images t
+;;  mu4e-view-show-addresses t
+;;  mu4e-compose-format-flowed nil
+;;  mu4e-date-format "%d/%m/%Y"
+;;  mu4e-headers-date-format "%d/%m/%Y"
+;;  mu4e-change-filenames-when-moving t
+;;  mu4e-attachments-dir "~/Downloads"
+;;  mu4e-maildir       "~/maildir"
+;;  mu4e-refile-folder "/Archive"
+;;  mu4e-sent-folder   "/Sent"
+;;  mu4e-drafts-folder "/Drafts"
+;;  mu4e-trash-folder  "/Trash"
+;;  mu4e-use-fancy-chars t
+;;  message-kill-buffer-on-exit t
+;;  )
+
+;; ;; check email
+;; (setq mu4e-get-mail-command  "mbsync -a"
+;;       mu4e-update-interval 2400)
+
+;; ;; smtp
+;; (setq message-send-mail-function 'smtpmail-send-it
+;;       smtpmail-stream-type 'starttls
+;;       smtpmail-default-smtp-server "smtp.mail.uni-mannheim.de"
+;;       smtpmail-smtp-server "smtp.mail.uni-mannheim.de"
+;;       smtpmail-smtp-service 587)
+
+;; ;; about myself
+
+;; (setq user-mail-address "chung-hong.chan@mzes.uni-mannheim.de"
+;;       mu4e-compose-reply-to-address "chung-hong.chan@mzes.uni-mannheim.de"
+;;       user-full-name "Chung-hong Chan")
+
+;; (setq mu4e-compose-signature
+;;       "Dr. Chung-hong Chan\nFellow\nMannheimer Zentrum für Europäische Sozialforschung (MZES)\nUniversität Mannheim\ntwitter / github: @chainsawriot")
+
+;; (global-set-key (kbd "C-c 4") 'mu4e)
+;; ;; No confirm
+;; (setq mu4e-confirm-quit nil)
+;; ;; short cuts
+;; (setq mu4e-maildir-shortcuts
+;;       '( ("/unimannheim/inbox" .  ?i)))
+
+;; ;;	mu4e-alert
+;; (use-package mu4e-alert
+;;   :init
+;;   (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+;;   )
+
+;; (setq shr-color-visible-luminance-min 100)
+
+;; Manual install
+(use-package vterm
+  :bind (
+	   :map vterm-mode-map
+	   ("C-y" . vterm-yank))
+  )
+(global-set-key (kbd "C-c v") 'vterm)

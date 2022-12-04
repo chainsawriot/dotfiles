@@ -15,25 +15,25 @@
 
 (setq inhibit-startup-message t)
 (setq master-font-family "Fira Code")
-(show-paren-mode 1)
-(global-visual-line-mode t)
-(tool-bar-mode 0)
-(menu-bar-mode 0)
-(fset 'yes-or-no-p 'y-or-n-p)
-(blink-cursor-mode 0)
+ (show-paren-mode 1)
+ (global-visual-line-mode t)
+ (tool-bar-mode 0)
+ (menu-bar-mode 0)
+ (fset 'yes-or-no-p 'y-or-n-p)
+ (blink-cursor-mode 0)
 
-;; Make <F12> set-mark-command
-(global-set-key (kbd "<f12>") 'set-mark-command)
-;; (global-set-key (kbd "<f9>") 'clipboard-yank)
-(global-set-key (kbd "<S-delete>") 'clipboard-yank)
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-(global-set-key (kbd "M-i") 'ispell-word)
-;; Change this from 10MB to 100MB
-(setq large-file-warning-threshold 100000000)
-(defun dired-dev ()
-  (interactive)
-  (dired "~/dev"))
-(global-set-key (kbd "C-c w") 'dired-dev)
+ ;; Make <F12> set-mark-command
+ (global-set-key (kbd "<f12>") 'set-mark-command)
+ ;; (global-set-key (kbd "<f9>") 'clipboard-yank)
+ (global-set-key (kbd "<S-delete>") 'clipboard-yank)
+ (add-to-list 'default-frame-alist '(fullscreen . maximized))
+ (global-set-key (kbd "M-i") 'ispell-word)
+ ;; Change this from 10MB to 100MB
+ (setq large-file-warning-threshold 100000000)
+ (defun dired-dev ()
+   (interactive)
+   (dired "~/dev"))
+ (global-set-key (kbd "C-c w") 'dired-dev)
 
 (use-package restart-emacs)
 
@@ -90,7 +90,7 @@
 			       "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
 			       "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
 			       "\\\\" "://"))
-  ;;(global-ligature-mode t)
+  (global-ligature-mode t)
   )
 
 (set-register ?e '(file . "~/dev/dotfiles/emacs.org"))
@@ -108,7 +108,7 @@
 
 (use-package vterm
 :init
-(defun my/vterm-send-next-key ()
+(defun vterm-send-next-key-verbose ()
       (interactive)
       (progn
 	(message "vterm-send-next-key enabled.")
@@ -119,7 +119,7 @@
 (
  :map vterm-mode-map
 	      ("C-y" . vterm-yank)
-	      ("C-q" . my/vterm-send-next-key))
+	      ("C-q" . vterm-send-next-key-verbose))
 )
 (global-set-key (kbd "C-c v") 'vterm)
 
@@ -175,6 +175,14 @@
       (ess-eval-linewise (format "rmarkdown::render('%s', output_format = 'all')" readmepath))
     (message "No README.RMD found.")))
 (defalias 'rmd #'render-readme)
+
+(defun reprex ()
+  "Create a reprex from the region"
+  (interactive)
+  (if (use-region-p)
+      (kill-ring-save (region-beginning) (region-end)))
+  (ess-eval-linewise "reprex::reprex()" "Creating reprex" nil nil)
+  )
 
 (use-package rainbow-delimiters
   :init

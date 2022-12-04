@@ -75,43 +75,23 @@
 ;;   :config
 ;;   (mood-line-mode))
 
-;; (use-package fira-code-mode
-;;   :custom (fira-code-mode-disabled-ligatures '("[]" "#{" "#(" "#_" "#_(" "x"))
-;;   (add-hook 'prog-mode-hook 'fira-code-mode)
-;;   (add-hook 'ess-mode-hook 'fira-code-mode)
-;;   )
-
-(when (window-system)
-  (set-frame-font master-font-family))
-(let ((alist '((33 . ".\\(?:\\(?:==\\|!!\\)\\|[!=]\\)")
-	       (35 . ".\\(?:###\\|##\\|_(\\|[#(?[_{]\\)")
-	       (36 . ".\\(?:>\\)")
-	       (37 . ".\\(?:\\(?:%%\\)\\|%\\)")
-	       (38 . ".\\(?:\\(?:&&\\)\\|&\\)")
-	       (42 . ".\\(?:\\(?:\\*\\*/\\)\\|\\(?:\\*[*/]\\)\\|[*/>]\\)")
-	       (43 . ".\\(?:\\(?:\\+\\+\\)\\|[+>]\\)")
-	       ;; (45 . ".\\(?:\\(?:-[>-]\\|<<\\|>>\\)\\|[<>}~-]\\)")
-	       ;; (46 . ".\\(?:\\(?:\\.[.<]\\)\\|[.=-]\\)")
-	       (47 . ".\\(?:\\(?:\\*\\*\\|//\\|==\\)\\|[*/=>]\\)")
-	       (48 . ".\\(?:x[a-zA-Z]\\)")
-	       (58 . ".\\(?:::\\|[:=]\\)")
-	       (59 . ".\\(?:;;\\|;\\)")
-	       (60 . ".\\(?:\\(?:!--\\)\\|\\(?:~~\\|->\\|\\$>\\|\\*>\\|\\+>\\|--\\|<[<=-]\\|=[<=>]\\||>\\)\\|[*$+~/<=>|-]\\)")
-	       (61 . ".\\(?:\\(?:/=\\|:=\\|<<\\|=[=>]\\|>>\\)\\|[<=>~]\\)")
-	       (62 . ".\\(?:\\(?:=>\\|>[=>-]\\)\\|[=>-]\\)")
-	       (63 . ".\\(?:\\(\\?\\?\\)\\|[:=?]\\)")
-	       (91 . ".\\(?:]\\)")
-	       (92 . ".\\(?:\\(?:\\\\\\\\\\)\\|\\\\\\)")
-	       (94 . ".\\(?:=\\)")
-	       (119 . ".\\(?:ww\\)")
-	       (123 . ".\\(?:-\\)")
-	       (124 . ".\\(?:\\(?:|[=|]\\)\\|[=>|]\\)")
-	       (126 . ".\\(?:~>\\|~~\\|[>=@~-]\\)")
-	       )
-	     ))
-  (dolist (char-regexp alist)
-    (set-char-table-range composition-function-table (car char-regexp)
-			  `([,(cdr char-regexp) 0 font-shape-gstring]))))
+(use-package ligature
+  :config
+  (ligature-set-ligatures 't '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+			       ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+			       "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+			       "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+			       "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+			       "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+			       "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+			       "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+			       ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+			       "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+			       "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+			       "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+			       "\\\\" "://"))
+  ;;(global-ligature-mode t)
+  )
 
 (set-register ?e '(file . "~/dev/dotfiles/emacs.org"))
 (set-register ?w '(file . "~/dev/braindump/deutsch.org"))
@@ -125,6 +105,23 @@
       kept-new-versions 20   ; how many of the newest versions to keep
       kept-old-versions 5    ; and how many of the old
       )
+
+(use-package vterm
+:init
+(defun my/vterm-send-next-key ()
+      (interactive)
+      (progn
+	(message "vterm-send-next-key enabled.")
+	(vterm-send-next-key)
+	)
+      )
+:bind
+(
+ :map vterm-mode-map
+	      ("C-y" . vterm-yank)
+	      ("C-q" . my/vterm-send-next-key))
+)
+(global-set-key (kbd "C-c v") 'vterm)
 
 (use-package rg
   :config
@@ -424,6 +421,7 @@
 		       ("https://journals.sagepub.com/action/showFeed?ui=0&mi=ehikzz&ai=2b4&jc=crxa&type=axatoc&feed=rss" journal)
 		       ("https://bymiachang.com/feed/" blog)
 		       ("https://martin.leyrer.priv.at/index.completerss20" blog)
+		       ("http://rss.slashdot.org/Slashdot/slashdotMain" news)
 		       ))
   )
 ;; ("http://chowching.wordpress.com/feed/" blog)
@@ -705,10 +703,40 @@
 
 ;; (setq shr-color-visible-luminance-min 100)
 
-;; Manual install
-(use-package vterm
-  :bind (
-	   :map vterm-mode-map
-	   ("C-y" . vterm-yank))
-  )
-(global-set-key (kbd "C-c v") 'vterm)
+;; (use-package fira-code-mode
+;;   :custom (fira-code-mode-disabled-ligatures '("[]" "#{" "#(" "#_" "#_(" "x"))
+;;   (add-hook 'prog-mode-hook 'fira-code-mode)
+;;   (add-hook 'ess-mode-hook 'fira-code-mode)
+;;   )
+
+;; (when (window-system)
+;;   (set-frame-font master-font-family))
+;; (let ((alist '((33 . ".\\(?:\\(?:==\\|!!\\)\\|[!=]\\)")
+;; 	       (35 . ".\\(?:###\\|##\\|_(\\|[#(?[_{]\\)")
+;; 	       (36 . ".\\(?:>\\)")
+;; 	       (37 . ".\\(?:\\(?:%%\\)\\|%\\)")
+;; 	       (38 . ".\\(?:\\(?:&&\\)\\|&\\)")
+;; 	       (42 . ".\\(?:\\(?:\\*\\*/\\)\\|\\(?:\\*[*/]\\)\\|[*/>]\\)")
+;; 	       (43 . ".\\(?:\\(?:\\+\\+\\)\\|[+>]\\)")
+;; 	       ;; (45 . ".\\(?:\\(?:-[>-]\\|<<\\|>>\\)\\|[<>}~-]\\)")
+;; 	       ;; (46 . ".\\(?:\\(?:\\.[.<]\\)\\|[.=-]\\)")
+;; 	       (47 . ".\\(?:\\(?:\\*\\*\\|//\\|==\\)\\|[*/=>]\\)")
+;; 	       (48 . ".\\(?:x[a-zA-Z]\\)")
+;; 	       (58 . ".\\(?:::\\|[:=]\\)")
+;; 	       (59 . ".\\(?:;;\\|;\\)")
+;; 	       (60 . ".\\(?:\\(?:!--\\)\\|\\(?:~~\\|->\\|\\$>\\|\\*>\\|\\+>\\|--\\|<[<=-]\\|=[<=>]\\||>\\)\\|[*$+~/<=>|-]\\)")
+;; 	       (61 . ".\\(?:\\(?:/=\\|:=\\|<<\\|=[=>]\\|>>\\)\\|[<=>~]\\)")
+;; 	       (62 . ".\\(?:\\(?:=>\\|>[=>-]\\)\\|[=>-]\\)")
+;; 	       (63 . ".\\(?:\\(\\?\\?\\)\\|[:=?]\\)")
+;; 	       (91 . ".\\(?:]\\)")
+;; 	       (92 . ".\\(?:\\(?:\\\\\\\\\\)\\|\\\\\\)")
+;; 	       (94 . ".\\(?:=\\)")
+;; 	       (119 . ".\\(?:ww\\)")
+;; 	       (123 . ".\\(?:-\\)")
+;; 	       (124 . ".\\(?:\\(?:|[=|]\\)\\|[=>|]\\)")
+;; 	       (126 . ".\\(?:~>\\|~~\\|[>=@~-]\\)")
+;; 	       )
+;; 	     ))
+;;   (dolist (char-regexp alist)
+;;     (set-char-table-range composition-function-table (car char-regexp)
+;; 			  `([,(cdr char-regexp) 0 font-shape-gstring]))))

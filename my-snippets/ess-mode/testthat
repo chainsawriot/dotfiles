@@ -5,6 +5,5 @@
 # expand-env: ((yas-indent-line 'fixed))
 # --
 test_that("$1", {
-		expect_${2:equal}($0)
-  }
-)
+  expect_${2:equal}($0)
+})

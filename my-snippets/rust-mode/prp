@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+#name : prp
+#key : prp
+#contributor : chainsawriot
+# --
+println!("$1"$0);

@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+#name : r2
+#key : rr
+#contributor : chainsawriot
+# --
+\`\`\`r
+$0
+\`\`\`

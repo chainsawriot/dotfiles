@@ -15,12 +15,13 @@
 
 (setq inhibit-startup-message t)
 (setq master-font-family "Fira Code")
- (show-paren-mode 1)
- (global-visual-line-mode t)
- (tool-bar-mode 0)
- (menu-bar-mode 0)
- (fset 'yes-or-no-p 'y-or-n-p)
- (blink-cursor-mode 0)
+(show-paren-mode 1)
+(global-visual-line-mode t)
+;; (global-hl-line-mode 1)
+(tool-bar-mode 0)
+(menu-bar-mode 0)
+(fset 'yes-or-no-p 'y-or-n-p)
+(blink-cursor-mode 0)
 
  ;; Make <F12> set-mark-command
  (global-set-key (kbd "<f12>") 'set-mark-command)
@@ -34,8 +35,9 @@
    (interactive)
    (dired "~/dev"))
  (global-set-key (kbd "C-c w") 'dired-dev)
+(global-set-key (kbd "C-q") nil)
 
-(use-package restart-emacs)
+;;(use-package restart-emacs)
 
 (use-package helm
   :bind (("M-x" . helm-M-x)
@@ -70,7 +72,26 @@
 ;; (use-package ayu-theme
 ;;   :config (load-theme 'ayu-grey t))
 
+(use-package solo-jazz-theme) ; Don't activate
 (set-face-attribute 'default nil :family master-font-family :height 140)
+
+(defvar dark-mode t "Whether or not dark mode is enabled")
+
+(defun toggle-dark-mode ()
+  "Toggle mode"
+  (interactive)
+  (if dark-mode
+      (progn
+	(disable-theme 'tron-legacy)
+	(load-theme 'solo-jazz t)
+	(setq dark-mode nil)
+	)
+    (progn
+      (disable-theme 'solo-jazz)
+	(load-theme 'tron-legacy t)
+	(setq dark-mode t)	
+      ))
+  )
 ;; (use-package mood-line
 ;;   :config
 ;;   (mood-line-mode))
@@ -92,6 +113,10 @@
 			       "\\\\" "://"))
   (global-ligature-mode t)
   )
+
+;; (use-package keycast
+;;   :config
+;;   (keycast-mode-line-mode))
 
 (set-register ?e '(file . "~/dev/dotfiles/emacs.org"))
 (set-register ?w '(file . "~/dev/braindump/deutsch.org"))
@@ -153,6 +178,7 @@
   (defalias 'lp 'ess-r-devtools-load-package)
   (defalias 'lt 'ess-r-devtools-test-package)
   (defalias 'lc 'ess-r-devtools-check-package)
+  (defalias 'ld 'ess-r-devtools-document-package)
   )
 
 (use-package key-chord
@@ -164,8 +190,8 @@
   (key-chord-define inferior-ess-r-mode-map "++" " -> ")
   )
 
-(load-file "~/dev/ess_rproj/ess_rproj.el")
-(add-hook 'ess-mode-hook #'ess-rproj)
+(load-file "~/dev/ess-rproj/ess-rproj.el")
+;;(add-hook 'ess-mode-hook #'ess-rproj)
 
 (defun render-readme ()
   "A elisp function to quickly render README.Rmd in a package directory"
@@ -179,19 +205,21 @@
 (defun reprex ()
   "Create a reprex from the region"
   (interactive)
-  (if (use-region-p)
-      (kill-ring-save (region-beginning) (region-end)))
-  (ess-eval-linewise "reprex::reprex()" "Creating reprex" nil nil)
-  )
+  (save-excursion
+    (if (use-region-p)
+	(kill-ring-save (region-beginning) (region-end)))
+    (ess-eval-linewise "reprex::reprex()" "Creating reprex" nil nil)
+  ))
 
 (use-package rainbow-delimiters
   :init
   (add-hook 'ess-mode-hook #'rainbow-delimiters-mode)
   (add-hook 'ess-mode-hook 'hs-minor-mode)
+  (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
   )
 (use-package rainbow-mode
   :init
-  (dolist (hook '(ess-mode-hook inferior-ess-mode-hook))
+  (dolist (hook '(ess-mode-hook inferior-ess-mode-hook emacs-lisp-mode-hook))
     (add-hook hook 'rainbow-turn-on))   
   )
 
@@ -214,6 +242,11 @@
 
 (use-package quarto-mode)
 
+;;(add-hook 'markdown-mode-hook #'(lambda () (flyspell-mode 1)))
+(add-hook 'markdown-mode-hook 'flyspell-mode)
+
+(use-package eglot)
+
 (defun refresh-emacs ()
   (interactive)
   (org-babel-tangle-file "~/dev/dotfiles/emacs.org")
@@ -222,10 +255,22 @@
   )
 (global-set-key (kbd "C-c e") #'refresh-emacs)
 
+(setq knit-preview nil)
+(add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil)))
+
 (defun knit ()
   (interactive)
   (save-buffer)
-  (async-shell-command (concat "Rscript -e \"rmarkdown::render('" buffer-file-name "', output_format = 'all')\"")))
+  (message "Rendering...")
+  (if knit-preview
+      (fset 'current-shell-command 'shell-command)
+    (fset 'current-shell-command 'async-shell-command))
+  (if (string= (file-name-extension buffer-file-name) "qmd")
+      (current-shell-command (concat "Rscript -e \"quarto::quarto_render('" buffer-file-name "', output_format = 'all', quiet = TRUE)\""))
+    (current-shell-command (concat "Rscript -e \"rmarkdown::render('" buffer-file-name "', output_format = 'all', quiet = TRUE)\"")))
+  (setq-local pdf-file-name (replace-regexp-in-string " " "-" (concat (file-name-sans-extension buffer-file-name) ".pdf")))
+  (if (and knit-preview (file-exists-p pdf-file-name))
+      (find-file pdf-file-name)))
 
 (global-set-key (kbd "C-c t") (lambda() (interactive) (find-file "~/dev")))
 
@@ -285,7 +330,7 @@
 	org-ref-default-bibliography "~/dev/dotfiles/bib.bib")
   )
 
-(defun ins-doi ()
+(defun add-doi ()
   (interactive)
   (progn
     (setq doi-to-query (read-string "DOI "))
@@ -346,12 +391,18 @@
 (use-package yasnippet
   :init
   (yas-global-mode 1)
-  (setq yas-snippet-dirs (append yas-snippet-dirs
-				 '("~/dev/dotfiles/my-snippets")))			       
-  (yas-reload-all)
+  (setq yas-snippet-dirs  '("~/dev/dotfiles/my-snippets"))
+  ;;(yas-load-directory "~/dev/dotfiles/my-snippets")
+  ;;(yas-reload-all)
   )
 
-(use-package yasnippet-snippets
+;; (use-package yasnippet-snippets
+;;   :after yasnippet
+;;   )
+(use-package helm-c-yasnippet
+  :init
+  (setq helm-yas-space-match-any-greedy t)
+  (global-set-key (kbd "C-c y") 'helm-yas-complete)
   :after yasnippet
   )
 
@@ -364,10 +415,15 @@
   ;;  (setq deft-default-extension "org")
   (setq deft-text-mode 'org-mode)
   (setq deft-use-filename-as-title t)
+  (setq deft-incremental-search nil)
   (setq deft-use-filter-string-for-filename t)
   (setq deft-auto-save-interval 30)
-  (setq deft-file-limit 10)
-  (global-set-key (kbd "C-c d") 'deft)  
+  (setq deft-file-limit 30)
+  (global-set-key (kbd "C-c d") 'deft)
+  :bind (
+	 :map deft-mode-map
+	      ("C-q" . 'deft-filter)
+	      )
   )
 
 (setq-default c-basic-offset 4)
@@ -406,11 +462,10 @@
 (use-package elfeed
   :config
   (setq elfeed-feeds '(
-		       ;; ("http://feeds.feedburner.com/thisweekinlinuxnew" linux)
 		       ("http://fullcirclemagazine.org/feed/" linux)
-		       ("http://www.raspberrypi.org/feed" linux)
+		       ;;("http://www.raspberrypi.org/feed" linux)
 		       ("http://www.greghendershott.com/feeds/all.rss.xml" emacs)
-		       ("http://www.chainsawriot.com/feed.xml" blog)
+		       ;;("http://www.chainsawriot.com/feed.xml" blog)
 		       ("http://mysterophilia.blogspot.com/feeds/posts/default" blog)
 		       ("http://tiney.com/?feed=rss2" blog)
 		       ("http://blog.liyiwei.org/?feed=rss2" research)
@@ -429,9 +484,18 @@
 		       ("https://journals.sagepub.com/action/showFeed?ui=0&mi=ehikzz&ai=2b4&jc=crxa&type=axatoc&feed=rss" journal)
 		       ("https://bymiachang.com/feed/" blog)
 		       ("https://martin.leyrer.priv.at/index.completerss20" blog)
-		       ("http://rss.slashdot.org/Slashdot/slashdotMain" news)
+		       ("https://rweekly.org/atom.xml" tech)
+		       ("https://sachachua.com/blog/category/emacs-news/feed" emacs)
+		       ("https://cprss.s3.amazonaws.com/rubyweekly.com.xml" tech)
+		       ;;("http://rss.slashdot.org/Slashdot/slashdotMain" news)
 		       ))
-  )
+  :bind (
+	 :map elfeed-search-mode-map
+	      ("C-q" . 'elfeed-update)
+
+  ))
+;; ("http://feeds.feedburner.com/thisweekinlinuxnew" linux)
+
 ;; ("http://chowching.wordpress.com/feed/" blog)
 ;; ("http://uingusu.blogspot.hk/feeds/posts/default" blog)
 ;; ("http://joechungvschina.blogspot.com/feeds/posts/default" blog)
@@ -486,6 +550,9 @@
   (setq inferior-lisp-program "sbcl")
   )
 
+(setq prettify-symbols-alist '(("lambda" . 955)))
+(global-prettify-symbols-mode 1)
+
 ;; (add-to-list 'load-path "/home/chainsawriot/dev/elisp/arduino-mode")
 ;; (setq auto-mode-alist (cons '("\\.\\(pde\\|ino\\)$" . ) auto-mode-alist))
 (add-to-list 'auto-mode-alist '("\\.ino\\'" . c++-mode))
@@ -524,28 +591,71 @@
   :config
   (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
 
-(defun my-nov-font-setup ()
+(defvar nov-cursor nil "Whether the cursor is enabled")
+
+(defun toggle-nov-cursor ()
+  "Toggle nov cursor mode"
+  (interactive)
+  (if nov-cursor
+      (progn
+	(setq cursor-type nil
+	      nov-cursor nil)
+	(scroll-lock-mode 1))
+    (progn
+      (setq cursor-type t
+	    nov-cursor t)
+      (scroll-lock-mode -1)
+      )))
+
+(defun nov-display ()
   (face-remap-add-relative 'variable-pitch :family "Liberation Serif"
-			   :height 1.5))
+			   :height 1.5)
+  (scroll-lock-mode 1)
+  (toggle-scroll-bar -1)
+  (setq mode-line-format nil
+	nov-header-line-format ""
+	cursor-type nil))
+(use-package visual-fill-column
+  :config
+  (setq-default visual-fill-column-center-text t)
+  (setq-default visual-fill-column-width 120))
 (use-package nov
   :config
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-  (add-hook 'nov-mode-hook 'my-nov-font-setup)
+  (add-hook 'nov-mode-hook 'nov-display)
+  (add-hook 'nov-mode-hook 'visual-fill-column-mode)
+  :bind
+  (
+   :map nov-mode-map 
+	("C-q" . 'toggle-nov-cursor))
   )
 
 (use-package rust-mode
   :config
   (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+  :bind
+  (
+   :map rust-mode-map
+	("C-q" . 'rust-run))
   )
 
-(use-package mastodon
-  :ensure t
+(use-package atomic-chrome
   :config
-
-
-  (setq mastodon-instance-url "https://emacs.ch"
-	mastodon-active-user "chainsawriot")
+  (atomic-chrome-start-server)
+  (setq atomic-chrome-buffer-open-style 'full)
+  (setq atomic-chrome-url-major-mode-alist
+    '(("github\\.com" . poly-markdown+r-mode)
+      ("overleaf\\.com" . latex-mode)))
   )
+
+;; (use-package mastodon
+;;   :ensure t
+;;   :config
+
+
+;;   (setq mastodon-instance-url "https://emacs.ch"
+;; 	mastodon-active-user "chainsawriot")
+;;   )
 
 ;; (use-package elfeed-goodies
 ;;   :init

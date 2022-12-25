@@ -4,5 +4,4 @@
 # binding: direct-keybinding
 # expand-env: ((yas-indent-line 'fixed))
 # --
-${1:name} <- ggplot(${2:data}, mapping = aes(x = $3, y = $0)) +
-NULL
+ggplot($1aes($2)) + geom_$3$0

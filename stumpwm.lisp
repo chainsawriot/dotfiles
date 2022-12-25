@@ -32,11 +32,11 @@
 ;; 	    (run-or-raise "kitty" '(:class "kitty")))
 
 
-(defcommand term1 () ()
-  "run term emul"
-  (run-or-raise "gnome-terminal" '(:class "Term1")))
+;; (defcommand term1 () ()
+;;   "run term emul"
+;;   (run-or-raise "gnome-terminal" '(:class "Term1")))
 
-(run-commands "term1")
+;;(run-commands "term1")
 
 (defcommand xterm-1 () ()
   "run an xterm instance or switch to it, if it is already running."
@@ -134,7 +134,7 @@
 ;;       (list '(:eval (cmd-tr "date")) "Batt: " '(:eval (cmd-tr "cat /sys/class/power_supply/CMB1/capacity")) "%"))
 
 (setf stumpwm:*screen-mode-line-format*
-      (list '(:eval (cmd-tr "date")) "Batt: " '(:eval (cmd-tr "cat /sys/class/power_supply/BAT1/capacity")) "%"))
+      (list '(:eval (cmd-tr "date")) "B: " '(:eval (cmd-tr "cat /sys/class/power_supply/BAT1/capacity")) "%"))
 
 
 (stumpwm:toggle-mode-line (stumpwm:current-screen)

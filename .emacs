@@ -16,6 +16,7 @@
 (setq inhibit-startup-message t)
 (setq master-font-family "Fira Code")
 (show-paren-mode 1)
+(column-number-mode 1)
 (global-visual-line-mode t)
 ;; (global-hl-line-mode 1)
 (tool-bar-mode 0)
@@ -211,6 +212,11 @@
     (ess-eval-linewise "reprex::reprex()" "Creating reprex" nil nil)
   ))
 
+;; fix for tibble and friends https://github.com/emacs-ess/ESS/issues/1193#issuecomment-1144182009
+(defun my-inferior-ess-init ()
+  (setq-local ansi-color-for-comint-mode 'filter))
+(add-hook 'inferior-ess-mode-hook 'my-inferior-ess-init)
+
 (use-package rainbow-delimiters
   :init
   (add-hook 'ess-mode-hook #'rainbow-delimiters-mode)
@@ -387,24 +393,6 @@
   :hook (org-mode . org-bullets-mode))
 
 (setq org-startup-with-inline-images t)
-
-(use-package yasnippet
-  :init
-  (yas-global-mode 1)
-  (setq yas-snippet-dirs  '("~/dev/dotfiles/my-snippets"))
-  ;;(yas-load-directory "~/dev/dotfiles/my-snippets")
-  ;;(yas-reload-all)
-  )
-
-;; (use-package yasnippet-snippets
-;;   :after yasnippet
-;;   )
-(use-package helm-c-yasnippet
-  :init
-  (setq helm-yas-space-match-any-greedy t)
-  (global-set-key (kbd "C-c y") 'helm-yas-complete)
-  :after yasnippet
-  )
 
 (use-package deft
   :init
@@ -648,6 +636,24 @@
       ("overleaf\\.com" . latex-mode)))
   )
 
+(use-package yasnippet
+  :init
+  (yas-global-mode 1)
+  (setq yas-snippet-dirs  '("~/dev/dotfiles/my-snippets"))
+  ;;(yas-load-directory "~/dev/dotfiles/my-snippets")
+  ;;(yas-reload-all)
+  )
+
+;; (use-package yasnippet-snippets
+;;   :after yasnippet
+;;   )
+(use-package helm-c-yasnippet
+  :init
+  (setq helm-yas-space-match-any-greedy t)
+  (global-set-key (kbd "C-c y") 'helm-yas-complete)
+  :after yasnippet
+  )
+
 ;; (use-package mastodon
 ;;   :ensure t
 ;;   :config
@@ -858,3 +864,16 @@
 ;;   (dolist (char-regexp alist)
 ;;     (set-char-table-range composition-function-table (car char-regexp)
 ;; 			  `([,(cdr char-regexp) 0 font-shape-gstring]))))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(helm-c-yasnippet atomic-chrome rust-mode nov visual-fill-column indium slime elfeed dashboard dockerfile-mode dumb-jump xclip deft org-bullets eval-in-repl org-ref helm-bibtex magit eglot quarto-mode poly-R poly-markdown rainbow-mode rainbow-delimiters key-chord ess exec-path-from-shell yaml-mode rg vterm ligature solo-jazz-theme tron-legacy-theme all-the-icons helm use-package)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

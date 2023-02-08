@@ -172,8 +172,8 @@
 ;;                          "Starting swank. M-x slime-connect RET RET, then (in-package stumpwm)."))
 
 ;; (run-shell-command "ibus-daemon -d -x -r -n stump")
-(run-shell-command "xrandr --output HDMI-1 --same-as eDP-1")
-(run-shell-command "xrandr --output eDP-1 --off")
+;;(run-shell-command "xrandr --output HDMI-1 --same-as eDP-1")
+;;(run-shell-command "xrandr --output eDP-1 --off")
 ;; (emacs)
 
 ;; (run-shell-command "/usr/libexec/deja-dup/deja-dup-monitor &")

@@ -136,3 +136,4 @@ export TESTTHAT_CPUS=4
 # [ -s "$HOME/.TinyTeX/bin/x86_64-linux" ] && export PATH="$HOME/.TinyTeX/bin/x86_64-linux:$PATH"
 
 export CARGO_NET_GIT_FETCH_WITH_CLI=true
+. "$HOME/.cargo/env"

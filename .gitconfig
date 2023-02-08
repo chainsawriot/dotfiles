@@ -1,7 +1,7 @@
 [user]
 	name = chainsawriot
 	email = chainsawtiney@gmail.com
-	signingkey = 2C6BCA41C5D457C3
+	signingkey = B2D59F6B67D72A18
 [core]
 	editor = emacsclient --tty
 [url "ssh://git@github.com/"]
@@ -17,7 +17,8 @@
 	interactive = auto
 	ui = true
 	pager = true
-
+[init]
+	defaultBranch = v0.0
 [color "diff"]
          meta = yellow bold
 	 frag = magenta bold

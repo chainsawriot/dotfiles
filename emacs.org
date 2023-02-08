@@ -59,6 +59,7 @@ Paren display; visual line mode
   (setq inhibit-startup-message t)
   (setq master-font-family "Fira Code")
   (show-paren-mode 1)
+  (column-number-mode 1)
   (global-visual-line-mode t)
   ;; (global-hl-line-mode 1)
   (tool-bar-mode 0)
@@ -318,6 +319,11 @@ The bookmark-set is actually "C-x r m"
 	    (kill-ring-save (region-beginning) (region-end)))
 	(ess-eval-linewise "reprex::reprex()" "Creating reprex" nil nil)
       ))
+
+    ;; fix for tibble and friends https://github.com/emacs-ess/ESS/issues/1193#issuecomment-1144182009
+    (defun my-inferior-ess-init ()
+      (setq-local ansi-color-for-comint-mode 'filter))
+    (add-hook 'inferior-ess-mode-hook 'my-inferior-ess-init)
   #+END_SRC
 
 
@@ -581,30 +587,6 @@ Beautiful bullets
 
 #+BEGIN_SRC emacs-lisp
   (setq org-startup-with-inline-images t)
-#+END_SRC
-
-
-* yas
-
-#+BEGIN_SRC emacs-lisp
-  (use-package yasnippet
-    :init
-    (yas-global-mode 1)
-    (setq yas-snippet-dirs  '("~/dev/dotfiles/my-snippets"))
-    ;;(yas-load-directory "~/dev/dotfiles/my-snippets")
-    ;;(yas-reload-all)
-    )
-
-  ;; (use-package yasnippet-snippets
-  ;;   :after yasnippet
-  ;;   )
-  (use-package helm-c-yasnippet
-    :init
-    (setq helm-yas-space-match-any-greedy t)
-    (global-set-key (kbd "C-c y") 'helm-yas-complete)
-    :after yasnippet
-    )
-
 #+END_SRC
 
 * deft
@@ -924,6 +906,29 @@ nov mode
 	("overleaf\\.com" . latex-mode)))
     )
 #+end_SRC
+
+* yas
+
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :init
+    (yas-global-mode 1)
+    (setq yas-snippet-dirs  '("~/dev/dotfiles/my-snippets"))
+    ;;(yas-load-directory "~/dev/dotfiles/my-snippets")
+    ;;(yas-reload-all)
+    )
+
+  ;; (use-package yasnippet-snippets
+  ;;   :after yasnippet
+  ;;   )
+  (use-package helm-c-yasnippet
+    :init
+    (setq helm-yas-space-match-any-greedy t)
+    (global-set-key (kbd "C-c y") 'helm-yas-complete)
+    :after yasnippet
+    )
+
+#+END_SRC
 
 
 * No longer using

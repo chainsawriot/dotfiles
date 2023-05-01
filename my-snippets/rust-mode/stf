@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+#name : stf
+#key : stf
+#contributor : chainsawriot
+# --
+String::from("$1")$0

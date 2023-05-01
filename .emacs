@@ -23,7 +23,7 @@
 (menu-bar-mode 0)
 (fset 'yes-or-no-p 'y-or-n-p)
 (blink-cursor-mode 0)
-
+  (display-time-mode 1)
  ;; Make <F12> set-mark-command
  (global-set-key (kbd "<f12>") 'set-mark-command)
  ;; (global-set-key (kbd "<f9>") 'clipboard-yank)
@@ -39,6 +39,24 @@
 (global-set-key (kbd "C-q") nil)
 
 ;;(use-package restart-emacs)
+
+(use-package yasnippet
+  :init
+  (yas-global-mode 1)
+  (setq yas-snippet-dirs  '("~/dev/dotfiles/my-snippets"))
+  ;;(yas-load-directory "~/dev/dotfiles/my-snippets")
+  ;;(yas-reload-all)
+  )
+
+;; (use-package yasnippet-snippets
+;;   :after yasnippet
+;;   )
+(use-package helm-c-yasnippet
+  :init
+  (setq helm-yas-space-match-any-greedy t)
+  (global-set-key (kbd "C-c y") 'helm-yas-complete)
+  :after yasnippet
+  )
 
 (use-package helm
   :bind (("M-x" . helm-M-x)
@@ -66,17 +84,20 @@
 (use-package tron-legacy-theme
   :config
   (setq tron-legacy-theme-vivid-cursor t)
-  (load-theme 'tron-legacy t))
+  ;;(load-theme 'tron-legacy t)
+  )
 ;; (use-package nord-theme
 ;;   :ensure t
 ;;   :init (load-theme 'nord))
 ;; (use-package ayu-theme
 ;;   :config (load-theme 'ayu-grey t))
 
-(use-package solo-jazz-theme) ; Don't activate
-(set-face-attribute 'default nil :family master-font-family :height 140)
+(use-package solo-jazz-theme
+  :config
+  (load-theme 'solo-jazz t))
+(set-face-attribute 'default nil :family master-font-family :height 160)
 
-(defvar dark-mode t "Whether or not dark mode is enabled")
+(defvar dark-mode nil "Whether or not dark mode is enabled")
 
 (defun toggle-dark-mode ()
   "Toggle mode"
@@ -162,6 +183,15 @@
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize))
   )
+
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
+
+(use-package dirvish
+  :config
+  (dirvish-override-dired-mode 1))
 
 (use-package ess
   :bind (
@@ -294,6 +324,16 @@
   ;; (set-face-background 'magit-diff-removed-highlight "gray20")
   ;; (set-face-background 'magit-diff-lines-boundary "blue")
   )
+
+(use-package lua-mode
+  :bind (
+	 :map lua-mode-map
+	      ("C-q" . 'eir-eval-in-lua))
+  :config
+  (require 'eval-in-repl-lua)
+  )
+
+(use-package haskell-mode)
 
 (use-package helm-bibtex
   :config
@@ -429,6 +469,14 @@
   )
 
 (use-package dockerfile-mode)
+
+;; (defun R-docker ()
+;;   (interactive)
+;;   (let ((ess-r-customize-alist
+;;          (append ess-r-customize-alist
+;;                  '((inferior-ess-program . "~/dev/dotfiles/r-docker"))))
+;;         (ess-R-readline t))
+;;     (R)))
 
 (use-package dashboard
   :ensure t
@@ -636,22 +684,9 @@
       ("overleaf\\.com" . latex-mode)))
   )
 
-(use-package yasnippet
-  :init
-  (yas-global-mode 1)
-  (setq yas-snippet-dirs  '("~/dev/dotfiles/my-snippets"))
-  ;;(yas-load-directory "~/dev/dotfiles/my-snippets")
-  ;;(yas-reload-all)
-  )
-
-;; (use-package yasnippet-snippets
-;;   :after yasnippet
-;;   )
-(use-package helm-c-yasnippet
-  :init
-  (setq helm-yas-space-match-any-greedy t)
-  (global-set-key (kbd "C-c y") 'helm-yas-complete)
-  :after yasnippet
+(defun fodira ()
+  (interactive)
+  (find-file "/sshx:fodira:~/")
   )
 
 ;; (use-package mastodon
@@ -864,16 +899,3 @@
 ;;   (dolist (char-regexp alist)
 ;;     (set-char-table-range composition-function-table (car char-regexp)
 ;; 			  `([,(cdr char-regexp) 0 font-shape-gstring]))))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(helm-c-yasnippet atomic-chrome rust-mode nov visual-fill-column indium slime elfeed dashboard dockerfile-mode dumb-jump xclip deft org-bullets eval-in-repl org-ref helm-bibtex magit eglot quarto-mode poly-R poly-markdown rainbow-mode rainbow-delimiters key-chord ess exec-path-from-shell yaml-mode rg vterm ligature solo-jazz-theme tron-legacy-theme all-the-icons helm use-package)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

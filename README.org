@@ -24,6 +24,13 @@ mkdir ~/gems
 gem install jekyll bundler
 #+END_SRC
 
+Sway
+
+#+BEGIN_SRC emacs-lisp
+sudo apt-get install sway waybar swaylock swayidle grim
+#+END_SRC
+
+* Obsolete things from this point on
 
 Folder structure
 #+BEGIN_SRC sh
@@ -54,3 +61,8 @@ GLFW_IM_MODULE=ibus
 # git clone git@github.com:stumpwm/stumpwm-contrib.git ~/.stumpwm.d/modules
 # #+END_SRC
 
+** xmonad
+
+#+BEGIN_SRC emacs-lisp
+sudo apt-get install xmonad libghc-xmonad-contrib-dev libghc-xmonad-dev i3lock
+#+END_SRC

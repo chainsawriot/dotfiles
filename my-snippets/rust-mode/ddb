@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+#name : ddb
+#key : ddb
+#contributor : chainsawriot
+# --
+#[derive(Debug)]
+struct $0

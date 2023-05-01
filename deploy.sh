@@ -22,6 +22,15 @@ ln -s ~/dev/dotfiles/.Rprofile ~/.Rprofile
 [ -f ~/.stumpwmrc ] && rm ~/.stumpwmrc
 ln -s ~/dev/dotfiles/stumpwm.lisp ~/.stumpwmrc
 
+# [ -f ~/.config/awesome ] && rm ~/.config/awesome
+# ln -s ~/dev/dotfiles/awesome ~/.config/awesome
+
+#[ -f ~/.xmonad/xmonad.hs ] && rm ~/.xmonad/xmonad.hs
+#ln -s ~/dev/dotfiles/xmonad.hs ~/.xmonad/xmonad.hs
+
+[ -f ~/.config/sway/config ] && rm ~/.config/sway/config
+ln -s ~/dev/dotfiles/sway.sh ~/.config/sway/config
+
 [ -f ~/.localrc ] && rm ~/.localrc
 [ -f ~/dev/dotfiles/.localrc ] && ln -s ~/dev/dotfiles/.localrc ~/.localrc
 
@@ -30,6 +39,3 @@ ln -s ~/dev/dotfiles/cargo ~/.cargo/config
 
 [ -f ~/.config/bat/config ] && rm ~/.config/bat/config
 ln -s ~/dev/dotfiles/bat.config ~/.config/bat/config
-
-
-

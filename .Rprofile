@@ -22,3 +22,7 @@ pwd <- function() {
 cd <- function(where = here::here()) {
     setwd(where)
 }
+
+tt <- function() {
+    cd(here::here("tests/testthat"))
+}

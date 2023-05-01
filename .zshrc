@@ -130,10 +130,13 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 export PATH="$NVM_DIR/versions/node/v17.1.0/bin:$PATH"
-
+export PATH="/usr/local/texlive/2023/bin/x86_64-linux:$PATH"
 export TESTTHAT_CPUS=4
 
 # [ -s "$HOME/.TinyTeX/bin/x86_64-linux" ] && export PATH="$HOME/.TinyTeX/bin/x86_64-linux:$PATH"
 
 export CARGO_NET_GIT_FETCH_WITH_CLI=true
 . "$HOME/.cargo/env"
+
+export PATH=/usr/bin:$PATH
+export DOCKER_HOST=unix:///run/user/1000/docker.sock

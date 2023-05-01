@@ -134,7 +134,7 @@
 ;;       (list '(:eval (cmd-tr "date")) "Batt: " '(:eval (cmd-tr "cat /sys/class/power_supply/CMB1/capacity")) "%"))
 
 (setf stumpwm:*screen-mode-line-format*
-      (list '(:eval (cmd-tr "date")) "B: " '(:eval (cmd-tr "cat /sys/class/power_supply/BAT1/capacity")) "%"))
+      (list '(:eval (cmd-tr "date")) "B: " '(:eval (cmd-tr "cat /sys/class/power_supply/BAT0/capacity")) "%"))
 
 
 (stumpwm:toggle-mode-line (stumpwm:current-screen)
@@ -172,8 +172,8 @@
 ;;                          "Starting swank. M-x slime-connect RET RET, then (in-package stumpwm)."))
 
 ;; (run-shell-command "ibus-daemon -d -x -r -n stump")
-;;(run-shell-command "xrandr --output HDMI-1 --same-as eDP-1")
-;;(run-shell-command "xrandr --output eDP-1 --off")
+(run-shell-command "xrandr --output HDMI-1 --same-as eDP-1")
+(run-shell-command "xrandr --output eDP-1 --off")
 ;; (emacs)
 
 ;; (run-shell-command "/usr/libexec/deja-dup/deja-dup-monitor &")

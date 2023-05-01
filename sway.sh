@@ -111,11 +111,11 @@ bar {
 
     # When the status_command prints a new line to stdout, swaybar updates.
     # The default just shows the current date and time.
-    status_command while date +'%Y-%m-%d %I:%M:%S %p'; do sleep 2; done
+    status_command while ~/.config/sway/status.sh; do sleep 1; done
 
     colors {
-        statusline #ffffff
-        background #323232
+        statusline #ebdbb2
+        background #282828
         inactive_workspace #32323200 #32323200 #5c5c5c
     }
 }

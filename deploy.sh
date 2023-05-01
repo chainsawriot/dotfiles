@@ -31,6 +31,10 @@ ln -s ~/dev/dotfiles/stumpwm.lisp ~/.stumpwmrc
 [ -f ~/.config/sway/config ] && rm ~/.config/sway/config
 ln -s ~/dev/dotfiles/sway.sh ~/.config/sway/config
 
+chmod +x ~/dev/dotfiles/status.sh
+[ -f ~/.config/sway/status.sh ] && rm ~/.config/sway/status.sh
+ln -s ~/dev/dotfiles/status.sh ~/.config/sway/status.sh
+
 [ -f ~/.localrc ] && rm ~/.localrc
 [ -f ~/dev/dotfiles/.localrc ] && ln -s ~/dev/dotfiles/.localrc ~/.localrc
 

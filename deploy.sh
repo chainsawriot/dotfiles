@@ -19,8 +19,8 @@ ln -s ~/dev/dotfiles/.Rprofile ~/.Rprofile
 # rm ~/.hyper.js
 # ln -s ~/dev/dotfiles/.hyper.js ~/.hyper.js
 
-[ -f ~/.stumpwmrc ] && rm ~/.stumpwmrc
-ln -s ~/dev/dotfiles/stumpwm.lisp ~/.stumpwmrc
+#[ -f ~/.stumpwmrc ] && rm ~/.stumpwmrc
+#ln -s ~/dev/dotfiles/stumpwm.lisp ~/.stumpwmrc
 
 # [ -f ~/.config/awesome ] && rm ~/.config/awesome
 # ln -s ~/dev/dotfiles/awesome ~/.config/awesome
@@ -28,12 +28,18 @@ ln -s ~/dev/dotfiles/stumpwm.lisp ~/.stumpwmrc
 #[ -f ~/.xmonad/xmonad.hs ] && rm ~/.xmonad/xmonad.hs
 #ln -s ~/dev/dotfiles/xmonad.hs ~/.xmonad/xmonad.hs
 
-[ -f ~/.config/sway/config ] && rm ~/.config/sway/config
-ln -s ~/dev/dotfiles/sway.sh ~/.config/sway/config
+#[ -f ~/.config/sway/config ] && rm ~/.config/sway/config
+#ln -s ~/dev/dotfiles/sway.sh ~/.config/sway/config
 
-chmod +x ~/dev/dotfiles/status.sh
-[ -f ~/.config/sway/status.sh ] && rm ~/.config/sway/status.sh
-ln -s ~/dev/dotfiles/status.sh ~/.config/sway/status.sh
+#chmod +x ~/dev/dotfiles/status.sh
+#[ -f ~/.config/sway/status.sh ] && rm ~/.config/sway/status.sh
+#ln -s ~/dev/dotfiles/status.sh ~/.config/sway/status.sh
+
+[ -f ~/.config/i3/config ] && rm ~/.config/i3/config
+ln -s ~/dev/dotfiles/i3_config.sh ~/.config/i3/config
+
+[ -f ~/.config/i3status/config ] && rm ~/.config/i3status/config
+ln -s ~/dev/dotfiles/i3status_config.sh ~/.config/i3status/config
 
 [ -f ~/.localrc ] && rm ~/.localrc
 [ -f ~/dev/dotfiles/.localrc ] && ln -s ~/dev/dotfiles/.localrc ~/.localrc

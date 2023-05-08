@@ -1,5 +1,6 @@
 * My dotfiles
 
+
 Previously, these dot files were deployed by rcm. It was not very efficient and therefore, I have written a simple deployment script.
 
 ** things I need to install manually
@@ -24,10 +25,10 @@ mkdir ~/gems
 gem install jekyll bundler
 #+END_SRC
 
-Sway
+i3
 
 #+BEGIN_SRC emacs-lisp
-sudo apt-get install sway waybar swaylock swayidle grim
+sudo apt-get install i3 i3lock
 #+END_SRC
 
 * Obsolete things from this point on
@@ -65,4 +66,10 @@ GLFW_IM_MODULE=ibus
 
 #+BEGIN_SRC emacs-lisp
 sudo apt-get install xmonad libghc-xmonad-contrib-dev libghc-xmonad-dev i3lock
+#+END_SRC
+
+** Sway
+
+#+BEGIN_SRC emacs-lisp
+sudo apt-get install sway waybar swaylock swayidle grim
 #+END_SRC

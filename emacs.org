@@ -739,7 +739,7 @@ Interact with ESS
       (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
     
       (setq dashboard-startup-banner 'logo)
-      (setq dashboard-items '((recents  . 10)
+      (setq dashboard-items '(
 			      (registers . 5)
 			      ))
       ;;(setq dashboard-week-agenda t)
@@ -1112,23 +1112,23 @@ Make pdf open with evince
 * Spotify / ncspot
 
 #+BEGIN_SRC emacs-lisp
-  ;; (defun open-spotify ()
-  ;;   (vterm t)
-  ;;   (rename-buffer "spotify" nil)
-  ;;   (vterm-send-string "ncspot")
-  ;;   (vterm-send-return))
+  (defun open-spotify ()
+    (vterm t)
+    (rename-buffer "spotify" nil)
+    (vterm-send-string "flatpak run io.github.hrkfdn.ncspot")
+    (vterm-send-return))
 
-  ;; (defun spotify ()
-  ;;   (interactive)
-  ;;   (if (get-buffer "spotify")
-  ;;       (switch-to-buffer "spotify")
-  ;;     (open-spotify)))
+  (defun spotify ()
+    (interactive)
+    (if (get-buffer "spotify")
+	(switch-to-buffer "spotify")
+      (open-spotify)))
 
-  ;; (defun spotify-play/pause ()
-  ;;   (interactive)
-  ;;   (if (get-buffer "spotify")
-  ;;       (progn (set-buffer "spotify")
-  ;; 	     (vterm-send-string "P"))))
+  (defun spotify-play/pause ()
+    (interactive)
+    (if (get-buffer "spotify")
+	(progn (set-buffer "spotify")
+	       (vterm-send-string "P"))))
 #+END_SRC
 
 ** Emoji

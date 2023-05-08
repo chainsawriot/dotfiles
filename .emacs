@@ -488,7 +488,7 @@
   (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 
   (setq dashboard-startup-banner 'logo)
-  (setq dashboard-items '((recents  . 10)
+  (setq dashboard-items '(
 			  (registers . 5)
 			  ))
   ;;(setq dashboard-week-agenda t)
@@ -761,23 +761,23 @@
 ;; (require 'sunrise-buttons)
 ;; (require 'sunrise-modeline)
 
-;; (defun open-spotify ()
-;;   (vterm t)
-;;   (rename-buffer "spotify" nil)
-;;   (vterm-send-string "ncspot")
-;;   (vterm-send-return))
+(defun open-spotify ()
+  (vterm t)
+  (rename-buffer "spotify" nil)
+  (vterm-send-string "flatpak run io.github.hrkfdn.ncspot")
+  (vterm-send-return))
 
-;; (defun spotify ()
-;;   (interactive)
-;;   (if (get-buffer "spotify")
-;;       (switch-to-buffer "spotify")
-;;     (open-spotify)))
+(defun spotify ()
+  (interactive)
+  (if (get-buffer "spotify")
+      (switch-to-buffer "spotify")
+    (open-spotify)))
 
-;; (defun spotify-play/pause ()
-;;   (interactive)
-;;   (if (get-buffer "spotify")
-;;       (progn (set-buffer "spotify")
-;; 	     (vterm-send-string "P"))))
+(defun spotify-play/pause ()
+  (interactive)
+  (if (get-buffer "spotify")
+      (progn (set-buffer "spotify")
+	     (vterm-send-string "P"))))
 
 ;; (use-package emojify
 ;;   :hook (after-init . global-emojify-mode))
@@ -899,3 +899,92 @@
 ;;   (dolist (char-regexp alist)
 ;;     (set-char-table-range composition-function-table (car char-regexp)
 ;; 			  `([,(cdr char-regexp) 0 font-shape-gstring]))))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(connection-local-criteria-alist
+   '(((:application tramp)
+      tramp-connection-local-default-system-profile tramp-connection-local-default-shell-profile)) t)
+ '(connection-local-profile-alist
+   '((tramp-connection-local-darwin-ps-profile
+      (tramp-process-attributes-ps-args "-acxww" "-o" "pid,uid,user,gid,comm=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" "-o" "state=abcde" "-o" "ppid,pgid,sess,tty,tpgid,minflt,majflt,time,pri,nice,vsz,rss,etime,pcpu,pmem,args")
+      (tramp-process-attributes-ps-format
+       (pid . number)
+       (euid . number)
+       (user . string)
+       (egid . number)
+       (comm . 52)
+       (state . 5)
+       (ppid . number)
+       (pgrp . number)
+       (sess . number)
+       (ttname . string)
+       (tpgid . number)
+       (minflt . number)
+       (majflt . number)
+       (time . tramp-ps-time)
+       (pri . number)
+       (nice . number)
+       (vsize . number)
+       (rss . number)
+       (etime . tramp-ps-time)
+       (pcpu . number)
+       (pmem . number)
+       (args)))
+     (tramp-connection-local-busybox-ps-profile
+      (tramp-process-attributes-ps-args "-o" "pid,user,group,comm=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" "-o" "stat=abcde" "-o" "ppid,pgid,tty,time,nice,etime,args")
+      (tramp-process-attributes-ps-format
+       (pid . number)
+       (user . string)
+       (group . string)
+       (comm . 52)
+       (state . 5)
+       (ppid . number)
+       (pgrp . number)
+       (ttname . string)
+       (time . tramp-ps-time)
+       (nice . number)
+       (etime . tramp-ps-time)
+       (args)))
+     (tramp-connection-local-bsd-ps-profile
+      (tramp-process-attributes-ps-args "-acxww" "-o" "pid,euid,user,egid,egroup,comm=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" "-o" "state,ppid,pgid,sid,tty,tpgid,minflt,majflt,time,pri,nice,vsz,rss,etimes,pcpu,pmem,args")
+      (tramp-process-attributes-ps-format
+       (pid . number)
+       (euid . number)
+       (user . string)
+       (egid . number)
+       (group . string)
+       (comm . 52)
+       (state . string)
+       (ppid . number)
+       (pgrp . number)
+       (sess . number)
+       (ttname . string)
+       (tpgid . number)
+       (minflt . number)
+       (majflt . number)
+       (time . tramp-ps-time)
+       (pri . number)
+       (nice . number)
+       (vsize . number)
+       (rss . number)
+       (etime . number)
+       (pcpu . number)
+       (pmem . number)
+       (args)))
+     (tramp-connection-local-default-shell-profile
+      (shell-file-name . "/bin/sh")
+      (shell-command-switch . "-c"))
+     (tramp-connection-local-default-system-profile
+      (path-separator . ":")
+      (null-device . "/dev/null"))) t)
+ '(package-selected-packages
+   '(magit visual-fill-column poly-R eglot dockerfile-mode org-ref deft haskell-mode eval-in-repl atomic-chrome quarto-mode dumb-jump ess all-the-icons org-bullets editorconfig dashboard elfeed ligature rust-mode use-package rainbow-delimiters nov dirvish rainbow-mode helm-bibtex helm-c-yasnippet solo-jazz-theme tron-legacy-theme lua-mode yaml-mode slime exec-path-from-shell vterm indium xclip rg key-chord)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

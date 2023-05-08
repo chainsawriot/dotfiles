@@ -19,6 +19,8 @@ set $menu rofi -modi drun -show drun
 #
 # You can get the names of your outputs by running: swaymsg -t get_outputs
 
+output * bg ~/Documents/wall.jpg fill
+
 output HDMI-A-1 resolution 1920x1080 position 0,0
 output eDP-1 disable
 ### Idle configuration
@@ -92,7 +94,7 @@ mode "stumpwm" {
      bindsym b exec swaymsg "[app_id=firefox] focus" || exec firefox; mode "default"
      bindsym c exec swaymsg "[app_id=gnome-terminal-server] focus" || exec $term; mode "default"
      bindsym e exec swaymsg "[instance=emacs] focus" || exec emacsclient -c; mode "default"
-     bindsym s exec swaymsg "[instance=spotify] focus" || exec spotify; mode "default"
+     bindsym s exec swaymsg "[app_id=psst-gui] focus" || exec psst-gui; mode "default"
      ## C-. o to use only the laptop screen; C-. O to change it back
      bindsym o exec swaymsg "Output HDMI-A-1 disable"; exec swaymsg "Output eDP-1 enable"; mode "default"
      bindsym Shift+o exec swaymsg "Output HDMI-A-1 enable"; exec swaymsg "Output eDP-1 disable"; mode "default"
@@ -111,7 +113,7 @@ bar {
 
     # When the status_command prints a new line to stdout, swaybar updates.
     # The default just shows the current date and time.
-    status_command while ~/.config/sway/status.sh; do sleep 1; done
+    status_command while ~/.config/sway/status.sh; do sleep 10; done
 
     colors {
         statusline #ebdbb2
@@ -219,7 +221,3 @@ bindsym $mod+r mode "resize"
 #set $down j
 #set $up k
 #set $right l
-
-# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-#output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
-#

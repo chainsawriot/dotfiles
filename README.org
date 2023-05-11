@@ -1,5 +1,8 @@
 * My dotfiles
 
+Please go here instead:
+
+https://codeberg.org/chainsawriot/dotfiles
 
 Previously, these dot files were deployed by rcm. It was not very efficient and therefore, I have written a simple deployment script.
 
